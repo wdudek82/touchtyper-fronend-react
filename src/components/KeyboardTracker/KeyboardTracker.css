@@ -1,0 +1,25 @@
+.text-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: #3a888a;
+    width: 600px;
+    line-break: auto;
+    border: 1px solid black;
+    margin: 0 auto;
+}
+
+.character {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 1;
+    color: #373635;
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 1px;
+    width: 1.1rem;
+    height: 2.5rem;
+    border-radius: 3px;
+    line-break: auto;
+}
