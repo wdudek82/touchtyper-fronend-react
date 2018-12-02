@@ -8,6 +8,7 @@ class KeyboardTracker extends Component {
       original:
         'This is only a test string. Some sample sentence to test whole application!:)',
       sentence: '',
+      results: [],
     };
   }
 
@@ -50,20 +51,25 @@ class KeyboardTracker extends Component {
 
   renderDiff = () => {
     return this.state.original.split('').map((char, index) => {
+      const classList = ['character'];
       const typedChar = this.state.sentence[index];
-      let bgcolor = 'none';
-      const errorFixed = '#fffa90';
 
       if (this.state.sentence.length > 0 && !!this.state.sentence[index]) {
-        bgcolor = typedChar === char ? '#70ff81' : '#ff998a';
+        if (typedChar === char) {
+          classList.push(this.state.results[index] < 2 ? 'fixed' : 'correct');
+        } else {
+          classList.push('incorrect');
+        }
+      }
+      if (this.state.sentence.length === index) {
+        classList.push('caret');
       }
 
       if (char !== 'ß') {
         return (
           <span
             key={`${char}_${index}`}
-            className="character"
-            style={{ background: bgcolor }}
+            className={classList.join(' ')}
           >
             {char !== ' ' ? char : <i>&nbsp;</i>}
           </span>

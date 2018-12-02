@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    background: #3a888a;
+    background: #6a779d;
     width: 600px;
     line-break: auto;
     border: 1px solid black;
@@ -18,8 +18,28 @@
     font-size: 1.6rem;
     font-weight: 500;
     margin: 1px;
-    width: 1.1rem;
+    width: 1rem;
     height: 2.5rem;
     border-radius: 3px;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
     line-break: auto;
+}
+
+.correct {
+    background: #70ff81;
+}
+
+.incorrect {
+    background: #ff998a;
+}
+
+.fixed {
+    backgroung: #fffa90;
+}
+
+.caret {
+    background: rgba(255, 255, 255, 0.3);
+    border-bottom: 3px solid #34a7ff;
+    border-radius: 0;
 }
