@@ -18,12 +18,10 @@ class KeyboardTracker extends Component {
   }
 
   handleKeyPressed = (e) => {
-    e.preventDefault();
-
     console.log('Window event: ', window.event);
     console.log('Key pressed => ', window.event.which, window.event.key);
 
-    let updatedSentence;
+    let updatedSentence = this.state.sentence;
     switch (window.event.keyCode) {
       case 8:
         updatedSentence = this.state.sentence.substring(
@@ -31,17 +29,25 @@ class KeyboardTracker extends Component {
           this.state.sentence.length - 1,
         );
         break;
-      case 13: // Enter
       case 9: // Tab
+      case 13: // Enter
       case 16: // Shift
       case 17: // Ctrl
       case 18: // Alt
       case 20: // Backspace
       case 27: // Esc
-        updatedSentence = this.state.sentence;
+      case 122: // F11
+      case 123: // F12
         break;
-      default:
-        updatedSentence = this.state.sentence + window.event.key;
+      default: {
+        e.preventDefault();
+
+        if (this.state.sentence.length < this.state.original.length) {
+          updatedSentence = this.state.sentence + window.event.key;
+        } else {
+          updatedSentence = this.state.sentence;
+        }
+      }
     }
 
     this.setState(() => ({
@@ -52,9 +58,10 @@ class KeyboardTracker extends Component {
   renderDiff = () => {
     return this.state.original.split('').map((char, index) => {
       const classList = ['character'];
+      const { sentence } = this.state;
       const typedChar = this.state.sentence[index];
 
-      if (this.state.sentence.length > 0 && !!this.state.sentence[index]) {
+      if (sentence.length > 0 && !!sentence[index]) {
         if (typedChar === char) {
           classList.push(this.state.results[index] < 2 ? 'fixed' : 'correct');
         } else {
@@ -67,10 +74,7 @@ class KeyboardTracker extends Component {
 
       if (char !== 'ß') {
         return (
-          <span
-            key={`${char}_${index}`}
-            className={classList.join(' ')}
-          >
+          <span key={`${char}_${index}`} className={classList.join(' ')}>
             {char !== ' ' ? char : <i>&nbsp;</i>}
           </span>
         );
