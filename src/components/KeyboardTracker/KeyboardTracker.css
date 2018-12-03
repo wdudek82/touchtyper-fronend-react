@@ -43,3 +43,8 @@
     border-bottom: 3px solid #34a7ff;
     border-radius: 0;
 }
+
+.word {
+    display: flex;
+    flex-direction: row;
+}

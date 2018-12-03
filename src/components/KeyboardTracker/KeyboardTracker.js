@@ -5,9 +5,9 @@ class KeyboardTracker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      original:
+      originalText:
         'This is only a test string. Some sample sentence to test whole application!:)',
-      sentence: '',
+      typedText: '',
       results: [],
     };
   }
@@ -18,15 +18,13 @@ class KeyboardTracker extends Component {
   }
 
   handleKeyPressed = (e) => {
-    console.log('Window event: ', window.event);
-    console.log('Key pressed => ', window.event.which, window.event.key);
+    let updatedTypedText = this.state.typedText;
 
-    let updatedSentence = this.state.sentence;
     switch (window.event.keyCode) {
       case 8:
-        updatedSentence = this.state.sentence.substring(
+        updatedTypedText = this.state.typedText.substring(
           0,
-          this.state.sentence.length - 1,
+          this.state.typedText.length - 1,
         );
         break;
       case 9: // Tab
@@ -42,52 +40,86 @@ class KeyboardTracker extends Component {
       default: {
         e.preventDefault();
 
-        if (this.state.sentence.length < this.state.original.length) {
-          updatedSentence = this.state.sentence + window.event.key;
+        if (this.state.typedText.length < this.state.originalText.length) {
+          updatedTypedText = this.state.typedText + window.event.key;
         } else {
-          updatedSentence = this.state.sentence;
+          updatedTypedText = this.state.typedText;
         }
       }
     }
 
     this.setState(() => ({
-      sentence: updatedSentence,
+      typedText: updatedTypedText,
     }));
   };
 
-  renderDiff = () => {
-    return this.state.original.split('').map((char, index) => {
-      const classList = ['character'];
-      const { sentence } = this.state;
-      const typedChar = this.state.sentence[index];
+  renderWordsRegex = () => {
+    const pattern = /\w+[\s\W]*/g;
+    const tokens = this.state.originalText.match(pattern);
+    const result = [];
 
-      if (sentence.length > 0 && !!sentence[index]) {
+    let offset = 0;
+    for (let i = 0; i < tokens.length; i += 1) {
+      const token = tokens[i];
+      result.push(
+        <span className="word">
+          {this.renderCharsRegex(token, offset)}
+        </span>
+      );
+      offset += token.length;
+    }
+
+    return result;
+  };
+
+  renderCharsRegex = (token, offset) => {
+    console.log(token);
+    return token.split('').map((char) => (
+      <span>{char !== ' ' ? char : <i>&nbsp;</i>}</span>
+    ));
+  };
+
+  renderWords = () => {
+    const renderedLetters = this.renderLetters();
+    return renderedLetters;
+  };
+
+  renderLetters = () => {
+    return this.state.originalText.split('').map((char, index) => {
+      const classList = ['character'];
+      const { typedText } = this.state;
+      const typedChar = this.state.typedText[index];
+
+      if (typedText.length > 0 && !!typedText[index]) {
         if (typedChar === char) {
           classList.push(this.state.results[index] < 2 ? 'fixed' : 'correct');
         } else {
           classList.push('incorrect');
         }
       }
-      if (this.state.sentence.length === index) {
+      if (typedText.length === index) {
         classList.push('caret');
       }
 
-      if (char !== 'ß') {
-        return (
-          <span key={`${char}_${index}`} className={classList.join(' ')}>
-            {char !== ' ' ? char : <i>&nbsp;</i>}
-          </span>
-        );
+      if (char === ' ') {
+        return ' ';
       }
-      return <br />;
+
+      return (
+        <span className={classList.join(' ')}>
+          {char !== ' ' ? char : <i>&nbsp;</i>}
+        </span>
+      );
     });
   };
 
   render() {
+    const rendered = this.renderWordsRegex();
+    console.log(this.renderWordsRegex());
     return (
       <div>
         <hr />
-        <div className="text-container">{this.renderDiff()}</div>
+        <div className="text-container">{rendered}</div>
       </div>
     );
   }
