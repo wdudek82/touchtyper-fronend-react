@@ -34,7 +34,6 @@ class KeyboardTracker extends Component {
     // const specialCodes = [8, 16, 18, 27, 32];
 
     if (!keyboardEventFired) {
-      console.log(keyCode);
       switch (e.keyCode) {
         case 8: // Backspace
           e.preventDefault(); // in FF it's "Back"
