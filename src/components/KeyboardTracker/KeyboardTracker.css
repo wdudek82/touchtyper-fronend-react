@@ -71,4 +71,5 @@
 
 .progress-bar {
     background: greenyellow;
+    border: none;  /* for FireFox */
 }

@@ -30,11 +30,11 @@ class KeyboardTracker extends Component {
   handleKeyDown = (e) => {
     let { typedText } = this.state;
     const { keyboardEventFired } = this.state;
-    const { keyCode } = e;
+    const { keyCode, key } = e;
     // const specialCodes = [8, 16, 18, 27, 32];
 
     if (!keyboardEventFired) {
-      switch (e.keyCode) {
+      switch (keyCode) {
         case 8: // Backspace
           e.preventDefault(); // in FF it's "Back"
           typedText = typedText.substring(0, this.state.typedText.length - 1);
@@ -53,7 +53,7 @@ class KeyboardTracker extends Component {
           e.preventDefault();
 
           if (typedText.length < this.state.originalText.length) {
-            typedText += e.key;
+            typedText += key;
           }
         }
       }
