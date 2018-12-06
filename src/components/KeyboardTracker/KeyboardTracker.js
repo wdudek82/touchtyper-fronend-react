@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './KeyboardTracker.css';
+import keyPressed from '../../assets/sounds/button.wav';
 
 class KeyboardTracker extends Component {
   constructor(props) {
@@ -10,7 +11,7 @@ class KeyboardTracker extends Component {
       typedText: '',
       mistakesIndexes: [],
       tokensLengthList: [],
-      keyboardEventFired: false,
+      keysPressed: [],
     };
   }
 
@@ -29,11 +30,27 @@ class KeyboardTracker extends Component {
 
   handleKeyDown = (e) => {
     let { typedText } = this.state;
-    const { keyboardEventFired } = this.state;
+    const { keysPressed } = this.state;
     const { keyCode, key } = e;
-    // const specialCodes = [8, 16, 18, 27, 32];
 
-    if (!keyboardEventFired) {
+    const audio1 = document.getElementById('audio');
+    const audio2 = document.getElementById('audio1');
+    const audio3 = document.getElementById('audio2');
+
+    if (!keysPressed.includes(keyCode) || keyCode === 8) {
+      if (
+        this.state.typedText[this.state.typedText.length - 1] ===
+        this.state.originalText[this.state.typedText.length - 1]
+      ) {
+        if (audio1.paused) {
+          audio1.play();
+        } else if (audio2.paused) {
+          audio2.play();
+        } else {
+          audio3.play();
+        }
+      }
+
       switch (keyCode) {
         case 8: // Backspace
           e.preventDefault(); // in FF it's "Back"
@@ -58,15 +75,20 @@ class KeyboardTracker extends Component {
         }
       }
 
-      this.setState(() => ({
+      // Allow auto-repeat when backspace pressed
+      this.setState((prevState) => ({
         typedText,
-        // keyboardEventFired: !specialCodes.includes(keyCode),
+        keysPressed: [...prevState.keysPressed, keyCode],
       }));
     }
   };
 
   handleKeyUp = (e) => {
-    // this.setState(() => ({ keyboardEventFired: false }));
+    const { keyCode } = e;
+
+    this.setState((prevState) => ({
+      keysPressed: prevState.keysPressed.filter((key) => key !== keyCode),
+    }));
   };
 
   createTokenLegthsList = () => {
@@ -142,6 +164,30 @@ class KeyboardTracker extends Component {
           <progress value={completed} max="100" className="progress-bar" />
         </div>
         <div className="text-container">{result}</div>
+        <audio id="audio" controls style={{ display: 'none' }}>
+          <source
+            // src="http://butlerccwebdev.net/support/html5-video/media/soundfile.mp3"
+            src={keyPressed}
+            type="audio/mpeg"
+          />{' '}
+          Your browser does not support the audio element.
+        </audio>
+        <audio id="audio1" controls style={{ display: 'none' }}>
+          <source
+            // src="http://butlerccwebdev.net/support/html5-video/media/soundfile.mp3"
+            src={keyPressed}
+            type="audio/mpeg"
+          />{' '}
+          Your browser does not support the audio element.
+        </audio>
+        <audio id="audio2" controls style={{ display: 'none' }}>
+          <source
+            // src="http://butlerccwebdev.net/support/html5-video/media/soundfile.mp3"
+            src={keyPressed}
+            type="audio/mpeg"
+          />{' '}
+          Your browser does not support the audio element.
+        </audio>
       </div>
     );
   }
