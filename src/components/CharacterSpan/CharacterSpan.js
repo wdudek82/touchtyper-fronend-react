@@ -1,5 +1,4 @@
 import React from 'react';
-// TODO: Move char styles to its own style sheet
 import './CharacterSpan.css';
 
 const CharacterSpan = (props) => {
