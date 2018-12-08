@@ -1,12 +1,3 @@
-#main-input {
-    color: transparent;
-    background: transparent;
-    width: 0;
-    height: 0;
-    border: none;
-    outline: none;
-}
-
 .text-container {
     display: flex;
     justify-content: center;
@@ -29,40 +20,9 @@
     padding: 1rem;
 }
 
-.char {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 1;
-    color: #373635;
-    font-size: 1.6rem;
-    font-weight: 500;
-    margin: 1px;
-    width: 1rem;
-    height: 2.5rem;
-    border-radius: 3px;
-    border-top: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    line-break: auto;
-}
 
-.correct {
-    background: #70ff81;
-}
 
-.incorrect {
-    background: #ff998a;
-}
 
-.fixed {
-    background: #fffa90;
-}
-
-.caret {
-    background: rgba(255, 255, 255, 0.4);
-    border-bottom: 3px solid #34a7ff;
-    border-radius: 0;
-}
 
 .token {
     display: flex;

@@ -1,9 +1,10 @@
 import React from 'react';
-import './KeyboardTracker.css';
+// TODO: Move char styles to its own style sheet
+import './CharacterSpan.css';
 
 const CharacterSpan = (props) => {
   return (
-    <span className={`char ${props.classes}`}>
+    <span className={`char ${props.classes || ''}`}>
       {props.children !== ' ' ? props.children : <i>&nbsp;</i>}
     </span>
   );

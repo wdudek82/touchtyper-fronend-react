@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import _ from 'lodash-uuid';
 import ProgressBar from '../Layout/ProgressBar/ProgressBar';
 import './TypingExercise.css';
+import CharacterSpan from '../CharacterSpan/CharacterSpan';
+import MasterInput from '../Layout/MasterInput/MasterInput';
 
 class TypingExercise extends Component {
   constructor(props) {
@@ -9,43 +11,32 @@ class TypingExercise extends Component {
     this.state = {
       originalText: props.text,
       typedText: '',
-      cachedCharSpans: this.createCharSpans(this.props.text),
+      cachedCharSpans: this.createInitialCharSpans(this.props.text),
       cachedHtml: [],
       mistakesIndexes: [],
       tokensData: this.getTokensData(this.props.text),
       keysPressed: [],
-      debug: [],
     };
   }
 
   componentDidMount() {
-    // const tokensList = this.createTokensList();
-    const initialHtml = this.createTokenSpans();
-    // const initialCharSpans = this.createCharSpans(this.props.text);
+    const initialHtml = this.createInitialTokenSpans();
 
     this.setState(() => ({
       cachedHtml: initialHtml,
-      // cachedCharSpans: initialCharSpans,
-      // tokensList,
     }));
-
-    const mainInput = document.querySelector('#main-input');
-    mainInput.addEventListener('blur', () => {
-      setTimeout(() => mainInput.focus(), 1);
-    });
   }
 
-  createCharSpans = (text, classList = []) => {
-    classList.splice(0, 0, 'char');
-    return text.split('').map((char) => (
-      <span key={_.uuid()} className={classList.join(' ')}>
+  createInitialCharSpans = (text) => {
+    return text.split('').map((char, index) => (
+      <CharacterSpan key={_.uuid()} classes={index === 0 && 'caret'}>
         {char}
-      </span>
+      </CharacterSpan>
     ));
   };
 
-  createTokenSpans = (text = this.state.originalText) => {
-    const charSpans = this.createCharSpans(text);
+  createInitialTokenSpans = () => {
+    const { cachedCharSpans } = this.state;
     let totalLength = 0;
 
     return this.state.tokensData.tokens.map((token, index) => {
@@ -54,7 +45,7 @@ class TypingExercise extends Component {
       totalLength += token.length;
       return (
         <span key={_.uuid()} className="token">
-          {charSpans.slice(start, end)}
+          {cachedCharSpans.slice(start, end)}
         </span>
       );
     });
@@ -62,8 +53,8 @@ class TypingExercise extends Component {
 
   wrapInTokenSpan = (start, tokenLength) => {
     return (
-      <span className="token current">
-        {this.state.cachedCharSpans.slice(start, start + (tokenLength))}
+      <span key={_.uuid()} className="token current">
+        {this.state.cachedCharSpans.slice(start, start + tokenLength)}
       </span>
     );
   };
@@ -83,7 +74,9 @@ class TypingExercise extends Component {
   };
 
   findUpdatedTokenTokenIndexCharIndex = (index) => {
-    const { tokensData: { tokens } } = this.state;
+    const {
+      tokensData: { tokens },
+    } = this.state;
 
     let tokenPosition;
     let updatedToken;
@@ -95,9 +88,7 @@ class TypingExercise extends Component {
         tokenPosition = i;
         updatedToken = tokens[i];
         updatedCharPositionInToken =
-          sum > tokens[0].length
-            ? tokens[i].length - (sum - index)
-            : index;
+          sum > tokens[0].length ? tokens[i].length - (sum - index) : index;
         break;
       }
     }
@@ -111,23 +102,47 @@ class TypingExercise extends Component {
     };
   };
 
-  recreateHtmlStructureWithNewCharSpan = (originalText, index, updatedCharSpan) => {
+  updateCharSpans = (index, updatedCharSpan) => {
     const {
+      updatedCharPositionInToken,
       updatedTokenData: { updatedToken, tokenPosition },
     } = this.findUpdatedTokenTokenIndexCharIndex(index);
-    const tokenStartingIndex = this.state.tokensData.tokenIndexes[tokenPosition];
 
     const updatedCachedCharSpans = this.state.cachedCharSpans;
     updatedCachedCharSpans[index] = updatedCharSpan;
 
+    // Add caret ============================
+    updatedCachedCharSpans[index + 1] = (
+      <CharacterSpan classes="caret">{this.state.originalText[index + 1]}</CharacterSpan>
+    );
+
+    // Add caret to the first character of the next token
+    // if (updatedCharPositionInToken === updatedToken.length - 1) {
+    //   updatedCachedCharSpans[index + 1] = (
+    //     <CharacterSpan classes="caret">{this.state.originalText[index + 1]}</CharacterSpan>
+    //   );
+    // }
+    // =======================================
+
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
-    const newToken = this.wrapInTokenSpan(tokenStartingIndex, updatedToken.length);
+    this.updateCachedHtml(updatedToken, tokenPosition);
+  };
+
+  updateCachedHtml = (updatedToken, tokenPosition) => {
+    const tokenStartingIndex = this.state.tokensData.tokenIndexes[
+      tokenPosition
+    ];
+
+    const newToken = this.wrapInTokenSpan(
+      tokenStartingIndex,
+      updatedToken.length,
+    );
     const updatedCachedHtml = this.state.cachedHtml;
 
     updatedCachedHtml[tokenPosition] = newToken;
 
-    this.setState(() => ({ cachedHtml: updatedCachedHtml, debug: newToken }));
+    this.setState(() => ({ cachedHtml: updatedCachedHtml }));
   };
 
   handleCharacterDiff = (text, forward) => {
@@ -135,32 +150,33 @@ class TypingExercise extends Component {
     const index = text.length - 1;
 
     let updatedCharSpan;
-    const classList = ['char'];
+    const classList = [];
     if (forward) {
       if (text[index] === originalText[index]) {
         const wasMistake = this.state.mistakesIndexes[index];
         classList.push(wasMistake ? 'fixed' : 'correct');
         updatedCharSpan = (
-          <span className={classList.join(' ')}>{originalText[index]}</span>
+          <CharacterSpan key={_.uuid()} classes={classList}>
+            {originalText[index]}
+          </CharacterSpan>
         );
       } else {
         classList.push('incorrect');
         updatedCharSpan = (
-          <span className={classList.join(' ')}>{originalText[index]}</span>
+          <CharacterSpan key={_.uuid()} classes={classList}>
+            {originalText[index]}
+          </CharacterSpan>
         );
         this.saveMistakeIndex(index);
       }
-      this.recreateHtmlStructureWithNewCharSpan(originalText, index, updatedCharSpan);
+      this.updateCharSpans(index, updatedCharSpan);
     } else {
       updatedCharSpan = (
-        <span className={classList.join(' ')}>{originalText[index + 1]}</span>
+        <CharacterSpan key={_.uuid()} classes={classList}>
+          {originalText[index + 1]}
+        </CharacterSpan>
       );
-      this.recreateHtmlStructureWithNewCharSpan(originalText, index + 1, updatedCharSpan);
-
-      // updatedCharSpan = (
-      //   <span className={classList.join(' ')}>{originalText[index]}</span>
-      // );
-      // this.recreateHtmlStructureWithNewCharSpan(originalText, index, updatedCharSpan);
+      this.updateCharSpans(index + 1, updatedCharSpan);
     }
   };
 
@@ -188,13 +204,10 @@ class TypingExercise extends Component {
   render() {
     return (
       <div>
-        <input
-          id="main-input"
-          type="text"
+        <MasterInput
+          keyUp={this.handleKeyUp}
+          change={this.handleChange}
           value={this.state.typedText}
-          onChange={this.handleChange}
-          onKeyUp={this.handleKeyUp}
-          autoFocus={true}
         />
 
         <ProgressBar
