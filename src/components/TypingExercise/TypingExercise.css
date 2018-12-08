@@ -20,15 +20,12 @@
     padding: 1rem;
 }
 
-
-
-
-
 .token {
     display: flex;
     flex-direction: row;
     border-top: 2px solid transparent;
     margin-top: 0.4rem;
+    padding-top: 0.1rem;
 }
 
 .token.current {
