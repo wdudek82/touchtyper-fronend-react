@@ -1,0 +1,16 @@
+.progress-container {
+    background: rgba(255, 255, 255, 0.3);
+    width: 900px;
+    margin: 1rem auto;
+    padding: 1rem;
+}
+
+.progress-label {
+    color: #1f1e1e;
+    font-weight: bold;
+}
+
+.progress-bar {
+    background: greenyellow;
+    border: none;  /* for FireFox */
+}

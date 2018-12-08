@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './KeyboardTracker.css';
 import keyPressed from '../../assets/sounds/button.wav';
+import ProgressBar from '../Layout/ProgressBar/ProgressBar';
 
 class KeyboardTracker extends Component {
   constructor(props) {
@@ -143,18 +144,14 @@ class KeyboardTracker extends Component {
 
   render() {
     const result = this.renderTokens();
-    const completed = Math.floor(
-      this.state.typedText.length / (this.state.originalText.length / 100),
-    );
-    const progressMsg =
-      completed === 100 ? 'Done!' : `${completed}% completed...`;
 
     return (
       <div>
-        <div className="progress-container">
-          <div className="progress-label">{progressMsg}</div>
-          <progress value={completed} max="100" className="progress-bar" />
-        </div>
+        <ProgressBar originalText={this.state.originalText} typedText={this.state.typedText} />
+        {/*<div className="progress-container">*/}
+          {/*<div className="progress-label">{progressMsg}</div>*/}
+          {/*<progress value={completed} max="100" className="progress-bar" />*/}
+        {/*</div>*/}
         <div className="text-container">{result}</div>
         <audio id="audio" className="keypressed-valid" controls style={{ display: 'none' }}>
           <source
