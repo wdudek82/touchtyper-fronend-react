@@ -102,44 +102,27 @@ class TypingExercise extends Component {
     };
   };
 
-  updateCharSpans = (index, updatedCharSpan) => {
+  updateCachedCharSpans = (index, updatedCharSpan) => {
     const {
       updatedCharPositionInToken,
       updatedTokenData: { updatedToken, tokenPosition },
     } = this.findUpdatedTokenTokenIndexCharIndex(index);
 
-    let updateNextToken = false;
-
     const updatedCachedCharSpans = this.state.cachedCharSpans;
     updatedCachedCharSpans[index] = updatedCharSpan;
 
-    // Add caret ============================
-    if (updatedCharPositionInToken < updatedToken.length - 1) {
-      // to the next char of the same token
-      console.log('=== is not last char');
-      updatedCachedCharSpans[index + 1] = (
-        <CharacterSpan classes="caret">
-          {this.state.originalText[index + 1]}
-        </CharacterSpan>
-      );
-    } else {
-      // to the first character of the next token
-      updateNextToken = true;
-      updatedCachedCharSpans[index + 1] = (
-        <CharacterSpan classes="caret">
-          {this.state.originalText[index + 1]}
-        </CharacterSpan>
-      );
-    }
+    // Add caret
+    updatedCachedCharSpans[index + 1] = (
+      this.createNewCharSpan(this.state.originalText[index + 1], 'caret')
+    );
 
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
     this.updateCachedHtml(updatedToken, tokenPosition);
 
-    console.log('token position', tokenPosition);
-    if (updateNextToken) {
+    // check is char span with caret is in the next token
+    if (updatedCharPositionInToken >= updatedToken.length - 1) {
       const nextToken = this.state.tokensData.tokens[tokenPosition + 1];
-      console.log('next token', nextToken);
       this.updateCachedHtml(nextToken, tokenPosition + 1);
     }
   };
@@ -160,38 +143,35 @@ class TypingExercise extends Component {
     this.setState(() => ({ cachedHtml: updatedCachedHtml }));
   };
 
+  createNewCharSpan = (char, classList = []) => (
+    <CharacterSpan key={_.uuid()} classes={classList}>
+      {char}
+    </CharacterSpan>
+  );
+
   handleCharacterDiff = (text, forward) => {
     const { originalText } = this.state;
     const index = text.length - 1;
 
     let updatedCharSpan;
-    const classList = [];
     if (forward) {
       if (text[index] === originalText[index]) {
         const wasMistake = this.state.mistakesIndexes[index];
-        classList.push(wasMistake ? 'fixed' : 'correct');
-        updatedCharSpan = (
-          <CharacterSpan key={_.uuid()} classes={classList}>
-            {originalText[index]}
-          </CharacterSpan>
+        updatedCharSpan = this.createNewCharSpan(
+          originalText[index],
+          wasMistake ? 'fixed' : 'correct',
         );
       } else {
-        classList.push('incorrect');
-        updatedCharSpan = (
-          <CharacterSpan key={_.uuid()} classes={classList}>
-            {originalText[index]}
-          </CharacterSpan>
+        updatedCharSpan = this.createNewCharSpan(
+          originalText[index],
+          'incorrect',
         );
         this.saveMistakeIndex(index);
       }
-      this.updateCharSpans(index, updatedCharSpan);
+      this.updateCachedCharSpans(index, updatedCharSpan);
     } else {
-      updatedCharSpan = (
-        <CharacterSpan key={_.uuid()} classes={classList}>
-          {originalText[index + 1]}
-        </CharacterSpan>
-      );
-      this.updateCharSpans(index + 1, updatedCharSpan);
+      updatedCharSpan = this.createNewCharSpan(originalText[index + 1]);
+      this.updateCachedCharSpans(index + 1, updatedCharSpan);
     }
   };
 
