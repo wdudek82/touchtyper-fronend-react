@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import _ from 'lodash-uuid';
 import ProgressBar from '../Layout/ProgressBar/ProgressBar';
 import './TypingExercise.css';
-import CharacterSpan from '../CharacterSpan/CharacterSpan';
+import CharacterSpan from './CharacterSpan/CharacterSpan';
 import MasterInput from '../Layout/MasterInput/MasterInput';
+import TokenSpan from './TokenSpan/TokenSpan';
 
 class TypingExercise extends Component {
   constructor(props) {
@@ -36,29 +37,24 @@ class TypingExercise extends Component {
   };
 
   createInitialTokenSpans = () => {
-    const { cachedCharSpans } = this.state;
     let totalLength = 0;
 
     return this.state.tokensData.tokens.map((token, index) => {
       const start = totalLength || index;
-      const end = totalLength + token.length;
       totalLength += token.length;
-      return (
-        <span
-          key={_.uuid()}
-          className={`token ${index === 0 ? 'current' : ''}`}
-        >
-          {cachedCharSpans.slice(start, end)}
-        </span>
-      );
+      return this.wrapInTokenSpan(start, token.length, index === 0);
     });
   };
 
   wrapInTokenSpan = (start, tokenLength, isCurrent) => {
     return (
-      <span key={_.uuid()} className={`token ${isCurrent ? 'current' : ''}`}>
-        {this.state.cachedCharSpans.slice(start, start + tokenLength)}
-      </span>
+      <TokenSpan
+        key={_.uuid()}
+        charSpans={this.state.cachedCharSpans}
+        start={start}
+        tokenLength={tokenLength}
+        isCurrent={isCurrent}
+      />
     );
   };
 
