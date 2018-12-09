@@ -102,7 +102,7 @@ class TypingExercise extends Component {
     };
   };
 
-  updateCachedCharSpans = (index, updatedCharSpan) => {
+  updateCachedCharSpans = (index, updatedCharSpan, forward = true) => {
     const {
       updatedCharPositionInToken,
       updatedTokenData: { updatedToken, tokenPosition },
@@ -112,9 +112,17 @@ class TypingExercise extends Component {
     updatedCachedCharSpans[index] = updatedCharSpan;
 
     // Add caret
-    updatedCachedCharSpans[index + 1] = (
-      this.createNewCharSpan(this.state.originalText[index + 1], 'caret')
+    const caretOffset = forward ? 1 : 0;
+    updatedCachedCharSpans[index + caretOffset] = (
+      this.createNewCharSpan(this.state.originalText[index + caretOffset], 'caret')
     );
+
+    // Remove caret if typing direction is not forward
+    if (!forward) {
+      updatedCachedCharSpans[index + 1] = (
+        this.createNewCharSpan(this.state.originalText[index + 1])
+      );
+    }
 
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
@@ -170,8 +178,10 @@ class TypingExercise extends Component {
       }
       this.updateCachedCharSpans(index, updatedCharSpan);
     } else {
+      // If player uses backspace, remove all styling besides "char" class
+      // from char that was on a position affected by backspace
       updatedCharSpan = this.createNewCharSpan(originalText[index + 1]);
-      this.updateCachedCharSpans(index + 1, updatedCharSpan);
+      this.updateCachedCharSpans(index + 1, updatedCharSpan, forward);
     }
   };
 
