@@ -44,7 +44,10 @@ class TypingExercise extends Component {
       const end = totalLength + token.length;
       totalLength += token.length;
       return (
-        <span key={_.uuid()} className="token">
+        <span
+          key={_.uuid()}
+          className={`token ${index === 0 ? 'current' : ''}`}
+        >
           {cachedCharSpans.slice(start, end)}
         </span>
       );
@@ -124,17 +127,26 @@ class TypingExercise extends Component {
         this.state.originalText[index + 1],
       );
     }
+    // ...and if from the first char of a token if backspace was pressed
+    if (!forward && updatedCharPositionInToken === 0) {
+      updatedCachedCharSpans[index - 1] = this.createNewCharSpan(
+        this.state.originalText[index - 1],
+      );
+    }
 
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
-    // check is char span with caret is in the next token
+    // check if char span with caret is at the last char of a token
+    // forward: add caret to the first char of a next token
+    // !forward: remove caret from first char of a next token
     if (updatedCharPositionInToken >= updatedToken.length - 1) {
       const nextToken = this.state.tokensData.tokens[tokenPosition + 1];
 
-      // remove "current" class from previous token
-      this.updateCachedHtml(updatedToken, tokenPosition, false);
-      // ...and add it to next
-      this.updateCachedHtml(nextToken, tokenPosition + 1, true);
+      // forward: remove "current" class from previous token
+      // !forward: remove "current" class from next token
+      this.updateCachedHtml(nextToken, tokenPosition + true, forward);
+
+      this.updateCachedHtml(updatedToken, tokenPosition, !forward);
     } else {
       this.updateCachedHtml(updatedToken, tokenPosition, true);
     }
@@ -227,7 +239,6 @@ class TypingExercise extends Component {
         />
 
         <div className="text-container">{this.state.cachedHtml}</div>
-        <div className="text-container">{this.state.debug}</div>
       </div>
     );
   }
