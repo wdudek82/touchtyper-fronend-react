@@ -51,9 +51,9 @@ class TypingExercise extends Component {
     });
   };
 
-  wrapInTokenSpan = (start, tokenLength) => {
+  wrapInTokenSpan = (start, tokenLength, isCurrent) => {
     return (
-      <span key={_.uuid()} className="token current">
+      <span key={_.uuid()} className={`token ${isCurrent ? 'current' : ''}`}>
         {this.state.cachedCharSpans.slice(start, start + tokenLength)}
       </span>
     );
@@ -113,29 +113,34 @@ class TypingExercise extends Component {
 
     // Add caret
     const caretOffset = forward ? 1 : 0;
-    updatedCachedCharSpans[index + caretOffset] = (
-      this.createNewCharSpan(this.state.originalText[index + caretOffset], 'caret')
+    updatedCachedCharSpans[index + caretOffset] = this.createNewCharSpan(
+      this.state.originalText[index + caretOffset],
+      'caret',
     );
 
     // Remove caret if typing direction is not forward
     if (!forward) {
-      updatedCachedCharSpans[index + 1] = (
-        this.createNewCharSpan(this.state.originalText[index + 1])
+      updatedCachedCharSpans[index + 1] = this.createNewCharSpan(
+        this.state.originalText[index + 1],
       );
     }
 
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
-    this.updateCachedHtml(updatedToken, tokenPosition);
-
     // check is char span with caret is in the next token
     if (updatedCharPositionInToken >= updatedToken.length - 1) {
       const nextToken = this.state.tokensData.tokens[tokenPosition + 1];
-      this.updateCachedHtml(nextToken, tokenPosition + 1);
+
+      // remove "current" class from previous token
+      this.updateCachedHtml(updatedToken, tokenPosition, false);
+      // ...and add it to next
+      this.updateCachedHtml(nextToken, tokenPosition + 1, true);
+    } else {
+      this.updateCachedHtml(updatedToken, tokenPosition, true);
     }
   };
 
-  updateCachedHtml = (updatedToken, tokenPosition) => {
+  updateCachedHtml = (updatedToken, tokenPosition, isCurrentToken) => {
     const tokenStartingIndex = this.state.tokensData.tokenIndexes[
       tokenPosition
     ];
@@ -143,6 +148,7 @@ class TypingExercise extends Component {
     const newToken = this.wrapInTokenSpan(
       tokenStartingIndex,
       updatedToken.length,
+      isCurrentToken,
     );
     const updatedCachedHtml = this.state.cachedHtml;
 
