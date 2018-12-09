@@ -108,25 +108,40 @@ class TypingExercise extends Component {
       updatedTokenData: { updatedToken, tokenPosition },
     } = this.findUpdatedTokenTokenIndexCharIndex(index);
 
+    let updateNextToken = false;
+
     const updatedCachedCharSpans = this.state.cachedCharSpans;
     updatedCachedCharSpans[index] = updatedCharSpan;
 
     // Add caret ============================
-    updatedCachedCharSpans[index + 1] = (
-      <CharacterSpan classes="caret">{this.state.originalText[index + 1]}</CharacterSpan>
-    );
-
-    // Add caret to the first character of the next token
-    // if (updatedCharPositionInToken === updatedToken.length - 1) {
-    //   updatedCachedCharSpans[index + 1] = (
-    //     <CharacterSpan classes="caret">{this.state.originalText[index + 1]}</CharacterSpan>
-    //   );
-    // }
-    // =======================================
+    if (updatedCharPositionInToken < updatedToken.length - 1) {
+      // to the next char of the same token
+      console.log('=== is not last char');
+      updatedCachedCharSpans[index + 1] = (
+        <CharacterSpan classes="caret">
+          {this.state.originalText[index + 1]}
+        </CharacterSpan>
+      );
+    } else {
+      // to the first character of the next token
+      updateNextToken = true;
+      updatedCachedCharSpans[index + 1] = (
+        <CharacterSpan classes="caret">
+          {this.state.originalText[index + 1]}
+        </CharacterSpan>
+      );
+    }
 
     this.setState(() => ({ cachedCharSpans: updatedCachedCharSpans }));
 
     this.updateCachedHtml(updatedToken, tokenPosition);
+
+    console.log('token position', tokenPosition);
+    if (updateNextToken) {
+      const nextToken = this.state.tokensData.tokens[tokenPosition + 1];
+      console.log('next token', nextToken);
+      this.updateCachedHtml(nextToken, tokenPosition + 1);
+    }
   };
 
   updateCachedHtml = (updatedToken, tokenPosition) => {
