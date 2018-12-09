@@ -153,16 +153,18 @@ class TypingExercise extends Component {
       tokenPosition
     ];
 
-    const newToken = this.wrapInTokenSpan(
-      tokenStartingIndex,
-      updatedToken.length,
-      isCurrentToken,
-    );
-    const updatedCachedHtml = this.state.cachedHtml;
+    if (updatedToken) {
+      const newToken = this.wrapInTokenSpan(
+        tokenStartingIndex,
+        updatedToken.length,
+        isCurrentToken,
+      );
+      const updatedCachedHtml = this.state.cachedHtml;
 
-    updatedCachedHtml[tokenPosition] = newToken;
+      updatedCachedHtml[tokenPosition] = newToken;
 
-    this.setState(() => ({ cachedHtml: updatedCachedHtml }));
+      this.setState(() => ({ cachedHtml: updatedCachedHtml }));
+    }
   };
 
   createNewCharSpan = (char, classList = []) => (
@@ -210,12 +212,15 @@ class TypingExercise extends Component {
 
   handleChange = (e) => {
     const { value } = e.target;
+    const { originalText, typedText } = this.state;
 
-    this.setState(() => ({
-      typedText: value,
-    }));
+    if (value.length <= originalText.length) {
+      this.setState(() => ({
+        typedText: value,
+      }));
 
-    this.handleCharacterDiff(value, this.state.typedText.length < value.length);
+      this.handleCharacterDiff(value, typedText.length <= value.length);
+    }
   };
 
   handleKeyUp = (e) => {};
