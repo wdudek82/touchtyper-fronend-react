@@ -8,9 +8,9 @@ module.exports = {
     jest: true,
   },
   rules: {
-    'quotes': ['error', 'single'],
+    quotes: ['error', 'single', { avoidEscape: true }],
     'arrow-body-style': 0,
-    'react/jsx-filename-extension': [1, {extensions: ['.js', '.jsx']}],
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'comma-dangle': [
       'warn',
       {
@@ -50,7 +50,7 @@ module.exports = {
         caughtErrors: 'all',
       },
     ],
-    'no-unused-expressions': ['error', {allowTaggedTemplates: true}],
+    'no-unused-expressions': ['error', { allowTaggedTemplates: true }],
     'no-underscore-dangle': 0,
     'react/destructuring-assignment': 0,
     'react/jsx-boolean-value': 'always',
@@ -58,13 +58,13 @@ module.exports = {
     'react/jsx-tag-spacing': [
       'error',
       {
-        'closingSlash': 'never',
-        'beforeSelfClosing': 'always',
-        'afterOpening': 'allow-multiline',
-        'beforeClosing': 'never'
-      }
+        closingSlash: 'never',
+        beforeSelfClosing: 'always',
+        afterOpening: 'allow-multiline',
+        beforeClosing: 'never',
+      },
     ],
-    'object-curly-newline': ['error', {consistent: true}],
+    'object-curly-newline': ['error', { consistent: true }],
     'operator-linebreak': 0,
     'jsx-a11y/label-has-for': 0,
     'implicit-arrow-linebreak': 0,

@@ -5,23 +5,55 @@ import './TypingExercise.css';
 import CharacterSpan from './CharacterSpan/CharacterSpan';
 import MasterInput from '../Layout/MasterInput/MasterInput';
 import TokenSpan from './TokenSpan/TokenSpan';
+import ExerciseText from '../ExerciseText/ExerciseText';
 
 class TypingExercise extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      originalText: props.text,
+      originalText: 'Ala ma kota.', // props.text,
       typedText: '',
-      cachedCharSpans: this.createInitialCharSpans(this.props.text),
+      cachedCharSpans: this.createInitialCharSpans('Ala ma kota.'),
       cachedHtml: [],
       mistakesIndexes: [],
-      tokensData: this.getTokensData(this.props.text),
-      keysPressed: [],
+      tokensData: this.getTokensData('Ala ma kota.'),
+      keyPressed: '',
+      exercises: [
+        {
+          id: 1,
+          title: "Kergha's Story",
+          text:
+            'And finally, I came to the place where souls go to die. Where the mirrored and worn spirits fall into an endless sea of grey, mirrored glass... and I lowered myself within... and lay among them... and I almost did not return. And do you know what I found there? There, among the silent and battered shells of the innumerable? Peace. Enlightenment. Truth.',
+          private: true,
+        },
+        {
+          id: 2,
+          title: 'Present Continuous',
+          text:
+            'The present continuous (also called present progressive) is a verb tense which is used to show that an ongoing action is happening now, either at the moment of speech or now in a larger sense. The present continuous can also be used to show that an action is going to take place in the near future. Read on for detailed descriptions, examples, and present continuous exercises.',
+          private: false,
+        },
+        {
+          id: 3,
+          title: 'The quick brown fox',
+          text: 'The quick brown fox jumps over the lazy dog.',
+          private: false,
+        },
+        {
+          id: 4,
+          title: 'Lorem ipsum',
+          text:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, omnis!',
+          private: false,
+        },
+      ],
     };
   }
 
   componentDidMount() {
     const initialHtml = this.createInitialTokenSpans();
+
+    console.log('exercise: ', this.props.match.params.id);
 
     this.setState(() => ({
       cachedHtml: initialHtml,
@@ -215,9 +247,7 @@ class TypingExercise extends Component {
     const { originalText, typedText } = this.state;
 
     if (value.length <= originalText.length) {
-      this.setState(() => ({
-        typedText: value,
-      }));
+      this.setState(() => ({ typedText: value }));
 
       this.handleCharacterDiff(value, typedText.length <= value.length);
     }
@@ -240,6 +270,7 @@ class TypingExercise extends Component {
         />
 
         <div className="text-container">{this.state.cachedHtml}</div>
+        <ExerciseText text={this.state.exercises[this.props.match.params.id - 1]} />
       </div>
     );
   }
