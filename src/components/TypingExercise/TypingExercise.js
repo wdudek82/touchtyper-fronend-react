@@ -1,64 +1,50 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import _ from 'lodash-uuid';
 import ProgressBar from '../Layout/ProgressBar/ProgressBar';
 import './TypingExercise.css';
 import CharacterSpan from './CharacterSpan/CharacterSpan';
 import MasterInput from '../Layout/MasterInput/MasterInput';
 import TokenSpan from './TokenSpan/TokenSpan';
-import ExerciseText from '../ExerciseText/ExerciseText';
 
 class TypingExercise extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      originalText: 'Ala ma kota.', // props.text,
+      isPrivate: this.props.exercise.isPrivate,
+      originalText: '',
       typedText: '',
-      cachedCharSpans: this.createInitialCharSpans('Ala ma kota.'),
+      tokensData: {},
+      cachedCharSpans: '',
       cachedHtml: [],
       mistakesIndexes: [],
-      tokensData: this.getTokensData('Ala ma kota.'),
       keyPressed: '',
-      exercises: [
-        {
-          id: 1,
-          title: "Kergha's Story",
-          text:
-            'And finally, I came to the place where souls go to die. Where the mirrored and worn spirits fall into an endless sea of grey, mirrored glass... and I lowered myself within... and lay among them... and I almost did not return. And do you know what I found there? There, among the silent and battered shells of the innumerable? Peace. Enlightenment. Truth.',
-          private: true,
-        },
-        {
-          id: 2,
-          title: 'Present Continuous',
-          text:
-            'The present continuous (also called present progressive) is a verb tense which is used to show that an ongoing action is happening now, either at the moment of speech or now in a larger sense. The present continuous can also be used to show that an action is going to take place in the near future. Read on for detailed descriptions, examples, and present continuous exercises.',
-          private: false,
-        },
-        {
-          id: 3,
-          title: 'The quick brown fox',
-          text: 'The quick brown fox jumps over the lazy dog.',
-          private: false,
-        },
-        {
-          id: 4,
-          title: 'Lorem ipsum',
-          text:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, omnis!',
-          private: false,
-        },
-      ],
     };
   }
 
   componentDidMount() {
-    const initialHtml = this.createInitialTokenSpans();
+    this.initializeExercise();
+  }
 
-    console.log('exercise: ', this.props.match.params.id);
+  initializeExercise = () => {
+    const { text, isPrivate } = this.props.exercise;
+    const initialTokensData = this.getTokensData(text);
+    const initialCharSpans = this.createInitialCharSpans(text);
+    const initialHtml = this.createInitialTokenSpans(
+      initialTokensData,
+      initialCharSpans,
+    );
 
     this.setState(() => ({
+      originalText: text,
+      typedText: '',
+      tokensData: initialTokensData,
       cachedHtml: initialHtml,
+      cachedCharSpans: initialCharSpans,
+      mistakesIndexes: [],
+      keyPressed: '',
     }));
-  }
+  };
 
   createInitialCharSpans = (text) => {
     return text.split('').map((char, index) => (
@@ -68,21 +54,26 @@ class TypingExercise extends Component {
     ));
   };
 
-  createInitialTokenSpans = () => {
+  createInitialTokenSpans = (tokensData, charSpans) => {
     let totalLength = 0;
 
-    return this.state.tokensData.tokens.map((token, index) => {
+    return tokensData.tokens.map((token, index) => {
       const start = totalLength || index;
       totalLength += token.length;
-      return this.wrapInTokenSpan(start, token.length, index === 0);
+      return this.wrapInTokenSpan(start, token.length, index === 0, charSpans);
     });
   };
 
-  wrapInTokenSpan = (start, tokenLength, isCurrent) => {
+  wrapInTokenSpan = (
+    start,
+    tokenLength,
+    isCurrent,
+    cachedCharSpans = this.state.cachedCharSpans,
+  ) => {
     return (
       <TokenSpan
         key={_.uuid()}
-        charSpans={this.state.cachedCharSpans}
+        charSpans={cachedCharSpans}
         start={start}
         tokenLength={tokenLength}
         isCurrent={isCurrent}
@@ -255,7 +246,13 @@ class TypingExercise extends Component {
 
   handleKeyUp = (e) => {};
 
+  resetExercise = () => {
+    this.initializeExercise();
+  };
+
   render() {
+    let { isPrivate } = this.state;
+
     return (
       <div>
         <MasterInput
@@ -264,13 +261,34 @@ class TypingExercise extends Component {
           value={this.state.typedText}
         />
 
+        <Link to="/">
+          <button type="button">Back</button>
+        </Link>
+        <button type="button" onClick={this.resetExercise}>
+          Restart
+        </button>
+        <button
+          type="button"
+          style={{ background: `${isPrivate ? 'green' : 'red'}` }}
+          onClick={() => {
+            this.setState((prevState) => ({ isPrivate: !prevState.isPrivate }));
+          }}
+        >
+          {isPrivate ? 'Public' : 'Private'}
+        </button>
+
         <ProgressBar
           originalText={this.state.originalText}
           typedText={this.state.typedText}
         />
 
         <div className="text-container">{this.state.cachedHtml}</div>
-        <ExerciseText text={this.state.exercises[this.props.match.params.id - 1]} />
+
+        <div>
+          <div>Speed: ???</div>
+          <div>Acuracy: ???</div>
+          <div>Rythm: ???</div>
+        </div>
       </div>
     );
   }

@@ -11,7 +11,7 @@ const ProgressBar = (props) => {
   return (
     <div className="progress-container">
       <div className="progress-label">{progressMsg}</div>
-      <progress value={completed} max="100" className="progress-bar" />
+      <progress value={completed || 0} max="100" className="progress-bar" />
     </div>
   );
 };

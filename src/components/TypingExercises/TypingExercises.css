@@ -1,0 +1,15 @@
+.exercise {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    margin: 1rem auto;
+    border: 1px solid #ccc;
+    background: #fff;
+    width: 400px;
+    height: 50px;
+}
+
+.exercise:hover {
+    box-shadow: 3px 3px 10px 0px #ccc;
+}
