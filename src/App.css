@@ -1,3 +1,15 @@
 .App {
   text-align: center;
 }
+
+.main-header {
+  background: rgba(255, 177, 0, 0.89);
+  margin-top: 0;
+  padding: 2rem 0;
+  box-shadow: 0 3px 3px 0 #ccc;
+}
+
+.brand {
+  font-size: 2rem;
+  color: rgba(255, 177, 0, 0.89);
+}

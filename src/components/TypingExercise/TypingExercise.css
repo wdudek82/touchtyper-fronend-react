@@ -1,10 +1,11 @@
 .text-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    background: rgb(214, 211, 209);
-    width: 900px;
-    line-break: auto;
-    margin: 0 auto;
-    padding: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: rgb(214, 211, 209);
+  width: 900px;
+  line-break: auto;
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 3px;
 }

@@ -22,13 +22,13 @@ class App extends Component {
               fontWeight: 700,
             }}
           >
-            <div>BRAND</div>
+            <div className="brand">BRAND</div>
             <div>Ranking</div>
             <div>Users</div>
             <div>Exercises</div>
             <div>Account</div>
           </nav>
-          <h1>TouchyTyper (Prototype)</h1>
+          <h1 className="main-header">TouchyTyper (Prototype)</h1>
           <Switch>
             <Route exact path="/" component={TypingExercises} />
             <Route path="/exercise/:id" component={ExerciseWrapper} />
