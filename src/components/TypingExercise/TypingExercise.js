@@ -18,7 +18,12 @@ class TypingExercise extends Component {
       cachedCharSpans: '',
       cachedHtml: [],
       mistakesIndexes: [],
+      unfixedMistakes: [],
       keyPressed: '',
+      accuracy: {
+        relative: 0,
+        real: 0,
+      },
     };
   }
 
@@ -34,6 +39,8 @@ class TypingExercise extends Component {
       initialTokensData,
       initialCharSpans,
     );
+    const initialMistakesIndexes = initialCharSpans.map(() => 0);
+    const initialUnfixedMistakes = initialCharSpans.map(() => 0);
 
     this.setState(() => ({
       originalText: text,
@@ -41,7 +48,8 @@ class TypingExercise extends Component {
       tokensData: initialTokensData,
       cachedHtml: initialHtml,
       cachedCharSpans: initialCharSpans,
-      mistakesIndexes: [],
+      mistakesIndexes: initialMistakesIndexes,
+      unfixedMistakes: initialUnfixedMistakes,
       keyPressed: '',
     }));
   };
@@ -204,11 +212,16 @@ class TypingExercise extends Component {
     if (forward) {
       if (text[index] === originalText[index]) {
         const wasMistake = this.state.mistakesIndexes[index];
+
+        this.updateUnfixedMistakes(index, true);
+
         updatedCharSpan = this.createNewCharSpan(
           originalText[index],
           wasMistake ? 'fixed' : 'correct',
         );
       } else {
+        this.updateUnfixedMistakes(index, false);
+
         updatedCharSpan = this.createNewCharSpan(
           originalText[index],
           'incorrect',
@@ -233,14 +246,53 @@ class TypingExercise extends Component {
     }));
   };
 
+  updateUnfixedMistakes = (index, isCorrect) => {
+    const { unfixedMistakes } = this.state;
+    unfixedMistakes[index] = isCorrect ? 0 : 1;
+
+    this.setState(() => ({ unfixedMistakes }));
+  };
+
+  calculatePercentOfCorrectChars = (a, b, fractionDigits) => {
+    const percent = a / 100;
+    return 100 - (b / percent).toFixed(fractionDigits);
+  };
+
+  calculateAccuracy = () => {
+    const { typedText, mistakesIndexes, unfixedMistakes } = this.state;
+    const sumOfUnfixed = unfixedMistakes.reduce((acc, curVal) => curVal + acc);
+    const allMistakes = mistakesIndexes.reduce((acc, curVal) => curVal + acc);
+    let relativeAccuracy = '100';
+    let realAccuracy = '100';
+
+    if (sumOfUnfixed) {
+      relativeAccuracy = this.calculatePercentOfCorrectChars(
+        typedText.length,
+        sumOfUnfixed,
+        1,
+      );
+    }
+    if (allMistakes) {
+      realAccuracy = this.calculatePercentOfCorrectChars(
+        typedText.length,
+        allMistakes,
+        1,
+      );
+    }
+
+    this.setState(() => ({
+      accuracy: { relative: relativeAccuracy, real: realAccuracy },
+    }));
+  };
+
   handleChange = (e) => {
     const { value } = e.target;
     const { originalText, typedText } = this.state;
 
     if (value.length <= originalText.length) {
       this.setState(() => ({ typedText: value }));
-
       this.handleCharacterDiff(value, typedText.length <= value.length);
+      this.calculateAccuracy();
     }
   };
 
@@ -251,7 +303,7 @@ class TypingExercise extends Component {
   };
 
   render() {
-    let { isPrivate } = this.state;
+    const { isPrivate, accuracy } = this.state;
 
     return (
       <div>
@@ -286,7 +338,9 @@ class TypingExercise extends Component {
 
         <div>
           <div>Speed: ???</div>
-          <div>Acuracy: ???</div>
+          <div>
+            Acuracy: {accuracy.relative} (real: {accuracy.real})
+          </div>
           <div>Rythm: ???</div>
         </div>
       </div>
