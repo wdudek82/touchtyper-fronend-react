@@ -50,6 +50,10 @@ class TypingExercise extends Component {
       mistakesIndexes: initialMistakesIndexes,
       unfixedMistakes: initialUnfixedMistakes,
       keyPressed: '',
+      accuracy: {
+        relative: '-',
+        real: '-',
+      },
     }));
   };
 
