@@ -1,5 +1,8 @@
 # Application to practice touch typing (Frontend in React)
 
+## Working prototype
+:point_right: http://touchytyper.wojtekdudek.xyz
+
 ## About
 
 - Current stage: proof of concept
