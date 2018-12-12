@@ -20,8 +20,8 @@ class TypingExercise extends Component {
       unfixedMistakes: [],
       keyPressed: '',
       accuracy: {
-        relative: 0,
-        real: 0,
+        relative: '-',
+        real: '-',
       },
     };
   }
@@ -281,7 +281,7 @@ class TypingExercise extends Component {
     }
 
     this.setState(() => ({
-      accuracy: { relative: relativeAccuracy, real: realAccuracy },
+      accuracy: { relative: `${relativeAccuracy}%`, real: `${realAccuracy}%` },
     }));
   };
 
@@ -340,7 +340,7 @@ class TypingExercise extends Component {
         <div>
           <div>Speed: ???</div>
           <div>
-            Acuracy: {accuracy.relative}% (real: {accuracy.real}%)
+            Acuracy: {accuracy.relative} (real: {accuracy.real})
           </div>
           <div>Rythm: ???</div>
         </div>
