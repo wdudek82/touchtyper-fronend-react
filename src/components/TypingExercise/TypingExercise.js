@@ -11,7 +11,6 @@ class TypingExercise extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isPrivate: this.props.exercise.isPrivate,
       originalText: '',
       typedText: '',
       tokensData: {},
@@ -255,7 +254,8 @@ class TypingExercise extends Component {
 
   calculatePercentOfCorrectChars = (a, b, fractionDigits) => {
     const percent = a / 100;
-    return 100 - (b / percent).toFixed(fractionDigits);
+    const result = 100 - (b / percent).toFixed(fractionDigits);
+    return result >= 0 ? result : 0;
   };
 
   calculateAccuracy = () => {
@@ -303,7 +303,8 @@ class TypingExercise extends Component {
   };
 
   render() {
-    const { isPrivate, accuracy } = this.state;
+    const { accuracy } = this.state;
+    const { isPrivate } = this.props.exercise.isPrivate;
 
     return (
       <div>
@@ -339,7 +340,7 @@ class TypingExercise extends Component {
         <div>
           <div>Speed: ???</div>
           <div>
-            Acuracy: {accuracy.relative} (real: {accuracy.real})
+            Acuracy: {accuracy.relative}% (real: {accuracy.real}%)
           </div>
           <div>Rythm: ???</div>
         </div>
