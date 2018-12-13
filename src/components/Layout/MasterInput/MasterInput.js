@@ -16,6 +16,7 @@ class MasterInput extends Component {
         type="text"
         value={this.props.value}
         onChange={this.props.change}
+        onKeyDown={this.props.keyDown}
         onKeyUp={this.props.keyUp}
         autoFocus={true}
       />

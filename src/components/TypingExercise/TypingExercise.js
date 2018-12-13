@@ -6,6 +6,8 @@ import './TypingExercise.css';
 import CharacterSpan from './CharacterSpan/CharacterSpan';
 import MasterInput from '../Layout/MasterInput/MasterInput';
 import TokenSpan from './TokenSpan/TokenSpan';
+import button from '../../assets/sounds/button.wav';
+import error from '../../assets/sounds/error.wav';
 
 class TypingExercise extends Component {
   constructor(props) {
@@ -19,6 +21,9 @@ class TypingExercise extends Component {
       mistakesIndexes: [],
       unfixedMistakes: [],
       keyPressed: '',
+      timeStampOfLastCorrectChar: 0,
+      timestamps: [],
+      speed: 0,
       accuracy: {
         relative: '-',
         real: '-',
@@ -28,6 +33,11 @@ class TypingExercise extends Component {
 
   componentDidMount() {
     this.initializeExercise();
+    this.registeredInterval = setInterval(this.calculateSpeed, 500);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.registeredInterval);
   }
 
   initializeExercise = () => {
@@ -50,6 +60,8 @@ class TypingExercise extends Component {
       mistakesIndexes: initialMistakesIndexes,
       unfixedMistakes: initialUnfixedMistakes,
       keyPressed: '',
+      timestamps: [],
+      speed: 0,
       accuracy: {
         relative: '-',
         real: '-',
@@ -210,13 +222,15 @@ class TypingExercise extends Component {
   handleCharacterDiff = (text, forward) => {
     const { originalText } = this.state;
     const index = text.length - 1;
+    const isTypedCorrect = text[index] === originalText[index];
 
     let updatedCharSpan;
     if (forward) {
-      if (text[index] === originalText[index]) {
+      if (isTypedCorrect) {
         const wasMistake = this.state.mistakesIndexes[index];
 
         this.updateUnfixedMistakes(index, true);
+        this.saveTimeStamp();
 
         updatedCharSpan = this.createNewCharSpan(
           originalText[index],
@@ -238,6 +252,8 @@ class TypingExercise extends Component {
       updatedCharSpan = this.createNewCharSpan(originalText[index + 1]);
       this.updateCachedCharSpans(index + 1, updatedCharSpan, forward);
     }
+
+    this.playSoundForKey(isTypedCorrect);
   };
 
   saveMistakeIndex = (index) => {
@@ -256,9 +272,36 @@ class TypingExercise extends Component {
     this.setState(() => ({ unfixedMistakes }));
   };
 
-  calculatePercentOfCorrectChars = (a, b, fractionDigits) => {
+  saveTimeStamp = () => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    this.setState((prevState) => ({
+      timeStampOfLastCorrectChar: timestamp,
+      timestamps: [...prevState.timestamps, timestamp],
+    }));
+  };
+
+  calculateSpeed = () => {
+    const { timestamps, unfixedMistakes } = this.state;
+    const sumOfUnfixed = unfixedMistakes.reduce((acc, curVal) => curVal + acc);
+    const first = timestamps[0];
+    const now = Math.round(new Date().getTime() / 1000);
+    const timeDelta = now - first;
+    let charsPerSecond = 0;
+
+    if (timeDelta) {
+      charsPerSecond =
+        (((this.state.typedText.length - sumOfUnfixed) / timeDelta) * 60) / 5;
+    }
+
+    this.setState(() => ({
+      speed: charsPerSecond > 0 ? Math.floor(charsPerSecond) : 0,
+    }));
+  };
+
+  calculatePercentOfCorrectChars = (a, b) => {
     const percent = a / 100;
-    const result = 100 - (b / percent).toFixed(fractionDigits);
+    const result = Math.floor(100 - (b / percent));
     return result >= 0 ? result : 0;
   };
 
@@ -273,14 +316,12 @@ class TypingExercise extends Component {
       relativeAccuracy = this.calculatePercentOfCorrectChars(
         typedText.length,
         sumOfUnfixed,
-        1,
       );
     }
     if (allMistakes) {
       realAccuracy = this.calculatePercentOfCorrectChars(
         typedText.length,
         allMistakes,
-        1,
       );
     }
 
@@ -289,9 +330,30 @@ class TypingExercise extends Component {
     }));
   };
 
+  playSoundForKey = (isCorrect = true) => {
+    const keysCorrect = document.querySelectorAll('.key-correct');
+    const keysIncorrect = document.querySelectorAll('.key-incorrect');
+
+    for (let i = 0; i < keysCorrect.length; i += 1) {
+      if (isCorrect) {
+        if (keysCorrect[i].paused) {
+          keysCorrect[i].play();
+          break;
+        }
+      } else {
+        if (keysIncorrect[i].paused) {
+          keysIncorrect[i].play();
+          break;
+        }
+      }
+    }
+  };
+
   handleChange = (e) => {
     const { value } = e.target;
     const { originalText, typedText } = this.state;
+
+    // this.playSoundForKey();
 
     if (value.length <= originalText.length) {
       this.setState(() => ({ typedText: value }));
@@ -300,6 +362,8 @@ class TypingExercise extends Component {
     }
   };
 
+  handleKeyDown = (e) => {};
+
   handleKeyUp = (e) => {};
 
   resetExercise = () => {
@@ -307,7 +371,7 @@ class TypingExercise extends Component {
   };
 
   render() {
-    const { accuracy } = this.state;
+    const { accuracy, speed, timestamps } = this.state;
     const { isPrivate } = this.props.exercise.isPrivate;
 
     return (
@@ -315,6 +379,7 @@ class TypingExercise extends Component {
         <MasterInput
           keyUp={this.handleKeyUp}
           change={this.handleChange}
+          keyDown={this.handleKeyDown}
           value={this.state.typedText}
         />
 
@@ -342,12 +407,26 @@ class TypingExercise extends Component {
         <div className="text-container">{this.state.cachedHtml}</div>
 
         <div>
-          <div>Speed: ???</div>
+          <div>Speed: {speed}</div>
           <div>
             Acuracy: {accuracy.relative} (real: {accuracy.real})
           </div>
           <div>Rythm: ???</div>
         </div>
+
+        <audio id="key1" className="key-correct" src={button} />
+        <audio id="key2" className="key-correct" src={button} />
+        <audio id="key3" className="key-correct" src={button} />
+        <audio id="key4" className="key-correct" src={button} />
+        <audio id="key5" className="key-correct" src={button} />
+        <audio id="key6" className="key-correct" src={button} />
+
+        <audio id="key7" className="key-incorrect" src={error} />
+        <audio id="key8" className="key-incorrect" src={error} />
+        <audio id="key9" className="key-incorrect" src={error} />
+        <audio id="key10" className="key-incorrect" src={error} />
+        <audio id="key11" className="key-incorrect" src={error} />
+        <audio id="key12" className="key-incorrect" src={error} />
       </div>
     );
   }
