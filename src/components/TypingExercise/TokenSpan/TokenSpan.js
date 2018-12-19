@@ -21,8 +21,12 @@ class TokenSpan extends React.Component {
       const charIndex = tokenStartIndex + index;
       let classes = '';
       if (this.props.typedText[charIndex]) {
-        classes =
-          char === this.props.typedText[charIndex] ? 'correct' : 'incorrect';
+        if (char === this.props.typedText[charIndex]) {
+          classes = this.props.mistakes[charIndex] ? 'fixed' : 'correct';
+        } else {
+          classes = 'incorrect';
+          this.props.mistakes[charIndex] = 1;
+        }
       }
 
       return (

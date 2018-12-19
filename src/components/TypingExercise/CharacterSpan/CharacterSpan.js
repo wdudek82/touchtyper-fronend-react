@@ -4,7 +4,7 @@ import './CharacterSpan.css';
 class CharacterSpan extends React.Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = false;
-    const { typedText, charIndex} = this.props;
+    const { typedText, charIndex } = this.props;
     const nextTypedText = nextProps.typedText;
 
     if (typedText[charIndex] !== nextTypedText[charIndex]) {
@@ -20,7 +20,7 @@ class CharacterSpan extends React.Component {
         {this.props.children !== ' ' ? this.props.children : <i>&nbsp;</i>}
       </span>
     );
-  };
+  }
 }
 
 export default CharacterSpan;

@@ -6,6 +6,7 @@ class TypingExercise extends Component {
   state = {
     originalText: this.props.exercise.text,
     typedText: '',
+    mistakes: [],
   };
 
   componentDidMount() {}
@@ -25,6 +26,7 @@ class TypingExercise extends Component {
           line={line}
           startIndex={startIndex}
           typedText={this.state.typedText}
+          mistakes={this.state.mistakes}
         />
       );
     });
@@ -39,7 +41,6 @@ class TypingExercise extends Component {
   render() {
     return (
       <div>
-        <h1>Hello, World!</h1>
         <input
           type="text"
           value={this.state.typedText}
