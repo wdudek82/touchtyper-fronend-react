@@ -1,104 +1,88 @@
 import React, { Component } from 'react';
-import MasterInput from '../Layout/MasterInput/MasterInput';
-import './TypingExercise.css';
 import LineSpan from './LineSpan/LineSpan';
+import './TypingExercise.css';
 
 class TypingExercise extends Component {
   state = {
     originalText: this.props.exercise.text,
     typedText: '',
-    lineData: {},
-    // tokensData: {},
   };
 
-  componentDidMount() {
-    // this.getTokensData(this.state.originalText);
-    this.getLinesData();
-  }
+  componentDidMount() {}
 
-  getTokensData = (text) => {
-    const pattern = /\W*\w+[\s\W]*/g;
-    const tokens = text.match(pattern);
+  createLineSpans = (text) => {
+    const pattern = /[\w\W]{1,55}\W/g;
+    const lines = this.state.originalText.match(pattern);
+    let totalLength = 0;
 
-    if (tokens) {
-      const tokenIndexes = [0];
-      let sum = tokens[0].length;
-      for (let i = 1; i < tokens.length; i += 1) {
-        tokenIndexes.push(sum);
-        sum += tokens[i].length;
-      }
+    return lines.map((line) => {
+      const startIndex = totalLength;
+      totalLength += line.length;
 
-      // this.setState(() => ({ tokensData: { tokens, tokenIndexes } }));
-      return { tokens, tokenIndexes };
-    }
-    return null;
-  };
-
-  getLinesData = () => {
-    const { tokens } = this.getTokensData(this.state.originalText);
-    const lineMaxLength = 55;
-    const lines = [];
-    const lineStartingIndexes = [0];
-    const lineLengths = [];
-    let startingIndex = 0;
-    let sum = 0;
-    for (let i = 0; i < tokens.length; i += 1) {
-      sum += tokens[i].length;
-
-      if (tokens[i + 1] && sum + tokens[i + 1].length > lineMaxLength) {
-        lineStartingIndexes.push(sum + lineStartingIndexes.slice(-1)[0]);
-        lineLengths.push(sum);
-        lines.push(tokens.slice(startingIndex, i));
-        startingIndex = i;
-        sum = 0;
-      }
-    }
-
-    this.setState(() => ({ lineData: { lines, lineStartingIndexes, lineLengths } }));
-  };
-
-  createLineSpans = () => {
-    const { lineData } = this.state;
-    return lineData.lines.map((line, index) => {
-      const typedTextTokens = this.getTokensData(
-        this.state.typedText.substr(
-          lineData.lineStartingIndexes[index],
-          lineData.lineLengths[index],
-        ),
+      return (
+        <LineSpan
+          key={line}
+          line={line}
+          startIndex={startIndex}
+          typedText={this.state.typedText}
+        />
       );
-
-      console.log('1. typed tokens:', typedTextTokens);
-      console.log('1. lineData:', lineData.lineStartingIndexes[index]);
-      console.log('1. lineData - lineLength:', lineData.lineLengths[index]);
-      return <LineSpan tokens={line} typedTokens={typedTextTokens && typedTextTokens.tokens} />;
     });
   };
 
-  handleChange = (e) => {
-    const { value } = e.target;
-    const { originalText } = this.state;
+  // createTokenSpans = (line, lineStartIndex) => {
+  //   const pattern = /\W*\w+\W*/g;
+  //   const tokens = line.match(pattern);
+  //   let totalLength = lineStartIndex;
+  //
+  //   return tokens.map((token) => {
+  //     const startIndex = totalLength;
+  //     totalLength += token.length;
+  //
+  //     return (
+  //       <TokenSpan key={_.uuid()}>{this.createCharSpans(token, startIndex)}</TokenSpan>
+  //     );
+  //   });
+  // };
 
-    if (value.length <= originalText.length) {
-      this.setState(() => ({ typedText: value }));
-    }
+  // createCharSpans = (token, tokenStartIndex) => {
+  //   return token.split('').map((char, index) => {
+  //     const charIndex = tokenStartIndex + index;
+  //     let classList = '';
+  //     if (this.state.typedText[charIndex]) {
+  //       classList =
+  //         char === this.state.typedText[charIndex] ? 'correct' : 'incorrect';
+  //     }
+  //
+  //     return (
+  //       <CharacterSpan key={_.uuid()} classes={classList}>
+  //         {char}
+  //       </CharacterSpan>
+  //     );
+  //   });
+  // };
+
+  handleOnChange = (e) => {
+    const { value } = e.target;
+
+    this.setState(() => ({ typedText: value }));
   };
 
-  handleKeyDown = (e) => {};
-
-  handleKeyUp = (e) => {};
-
   render() {
+    // console.log('typed: ', this.state.typedText, this.state.originalText.length);
+    // this.createLineSpans(this.state.originalText);
+
     return (
       <div>
-        <MasterInput
-          keyUp={this.handleKeyUp}
-          change={this.handleChange}
-          keyDown={this.handleKeyDown}
+        <h1>Hello, World!</h1>
+        <input
+          type="text"
           value={this.state.typedText}
+          onChange={this.handleOnChange}
         />
 
         <div className="text-container">
-          {this.state.lineData.lines && this.createLineSpans()}
+          {this.createLineSpans()}
         </div>
       </div>
     );

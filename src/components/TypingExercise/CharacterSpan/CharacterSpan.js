@@ -1,12 +1,30 @@
 import React from 'react';
 import './CharacterSpan.css';
 
-const CharacterSpan = (props) => {
-  return (
-    <span className={`char ${props.classes || ''}`}>
-      {props.children !== ' ' ? props.children : <i>&nbsp;</i>}
-    </span>
-  );
-};
+class CharacterSpan extends React.Component {
+  // componentWillReceiveProps(nextProps, nextContext) {
+  //   console.log(nextProps);
+  // }
+
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    let shouldUpdate = false;
+    const { typedText, charIndex} = this.props;
+    const nextTypedText = nextProps.typedText;
+
+    if (typedText[charIndex] !== nextTypedText[charIndex]) {
+      shouldUpdate = true;
+    }
+
+    return shouldUpdate;
+  }
+
+  render() {
+    return (
+      <span className={`char ${this.props.classes || ''}`}>
+        {this.props.children !== ' ' ? this.props.children : <i>&nbsp;</i>}
+      </span>
+    );
+  };
+}
 
 export default CharacterSpan;

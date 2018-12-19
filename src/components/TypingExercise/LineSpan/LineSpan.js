@@ -4,36 +4,46 @@ import './LineSpan.css';
 
 class LineSpan extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-
     let shouldUpdate = false;
-    if (nextProps.typedTokens && this.props.typedTokens) {
-      for (let i = 0; nextProps.typedTokens.length; i += 1) {
-        if (nextProps.typedTokens[i] !== this.props.typedToken[i]) {
-          console.group('LineSpan :: shouldComponentUpdate');
-          console.log('nextProps', nextProps);
-          console.log('nextState', nextState);
-          console.log('nextContext', nextContext);
-          console.groupEnd();
+    const { line, startIndex } = this.props;
+    const typedTextLine = this.props.typedText.substr(startIndex, line.length);
+    const newTypedTextLine = nextProps.typedText.substr(startIndex, line.length);
 
-          shouldUpdate = true;
-          break;
-        }
-      }
+
+    if (typedTextLine !== newTypedTextLine) {
+      shouldUpdate = true;
     }
+
     return shouldUpdate;
   }
 
-  createTokenSpans = () => {
-    const { tokens, typedTokens } = this.props;
+  createTokenSpans = (line, lineStartIndex) => {
+    const pattern = /\W*\w+\W*/g;
+    const tokens = line.match(pattern);
+    let totalLength = lineStartIndex;
 
-    console.log('2. typed tokens:', typedTokens);
-    return tokens.map((token, index) => {
-      return <TokenSpan token={token} typedToken={typedTokens} />;
+    return tokens.map((token) => {
+      const startIndex = totalLength;
+      totalLength += token.length;
+
+      return (
+        <TokenSpan
+          key={`${token}_${startIndex}`}
+          token={token}
+          startIndex={startIndex}
+          typedText={this.props.typedText}
+        />
+      );
     });
   };
 
   render() {
-    return <span className="line">{this.createTokenSpans()}</span>;
+    const { line, startIndex } = this.props;
+    return (
+      <span className="line">
+        {this.createTokenSpans(line, startIndex)}
+      </span>
+    );
   }
 }
 

@@ -3,42 +3,47 @@ import './TokenSpan.css';
 import CharacterSpan from '../CharacterSpan/CharacterSpan';
 
 class TokenSpan extends React.Component {
-  componentWillMount() {
-    // console.log('token did mount', this.props);
-  }
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    // console.log('will receive', nextProps);
-  }
-
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    let shouldUpdate = true;
-    if (nextProps.typedToken === this.props.typedToken) {
-      shouldUpdate = false;
+    let shouldUpdate = false;
+    const { token, startIndex } = this.props;
+    const typedTextToken = this.props.typedText.substr(startIndex, token.length);
+    const newTypedTextToken = nextProps.typedText.substr(startIndex, token.length);
+
+    if (typedTextToken !== newTypedTextToken) {
+      shouldUpdate = true;
     }
 
     return shouldUpdate;
   }
 
-  createCharSpans = () => {
-    const { token, typedToken } = this.props;
-
-
+  createCharSpans = (token, tokenStartIndex) => {
     return token.split('').map((char, index) => {
+      const charIndex = tokenStartIndex + index;
       let classes = '';
-      if (typedToken && typedToken[index]) {
-        classes = typedToken[index] === char ? 'correct' : 'incorrect';
+      if (this.props.typedText[charIndex]) {
+        classes =
+          char === this.props.typedText[charIndex] ? 'correct' : 'incorrect';
       }
-      return <CharacterSpan classes={classes}>{char}</CharacterSpan>;
+
+      return (
+        <CharacterSpan
+          key={`${char}_${charIndex}`}
+          classes={classes}
+          charIndex={charIndex}
+          typedText={this.props.typedText}
+        >
+          {char}
+        </CharacterSpan>
+      );
     });
   };
 
   render() {
-    const { charSpans, isCurrent, start, tokenLength } = this.props;
+    const { token, startIndex } = this.props;
 
     return (
-      <span className={`token ${isCurrent ? 'current' : ''}`}>
-        {this.createCharSpans()}
+      <span className={`token`}>
+        {this.createCharSpans(token, startIndex)}
       </span>
     );
   }
