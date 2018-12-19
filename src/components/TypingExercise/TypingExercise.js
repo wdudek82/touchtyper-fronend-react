@@ -69,18 +69,21 @@ class TypingExercise extends Component {
 
   handleOnChange = (e) => {
     const { value } = e.target;
+    const { originalText } = this.state;
 
-    // TODO: Temporary, replace with Redux
-    const isCorrect =
-      value.slice(-1)[0] === this.state.originalText[value.length - 1];
+    if (value.length <= originalText.length) {
+      // TODO: Temporary, replace with Redux
+      const isCorrect = value.slice(-1)[0] === originalText[value.length - 1];
 
-    if (isCorrect) {
-      this.saveTimeStamp();
+      if (isCorrect) {
+        this.saveTimeStamp();
+      }
+      // ==========================
+
+      this.playSoundForKey(isCorrect);
+
+      this.setState(() => ({ typedText: value }));
     }
-    // ==========================
-
-    this.playSoundForKey(isCorrect);
-    this.setState(() => ({ typedText: value }));
   };
 
   render() {
