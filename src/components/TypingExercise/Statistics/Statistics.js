@@ -33,7 +33,7 @@ class Statistics extends Component {
 
     if (timeDelta) {
       charsPerSecond =
-        (((this.props.typedText.length - sumOfUnfixed) / timeDelta) * 60) / 5;
+        (((this.props.typedText.length - sumOfUnfixed) / timeDelta) * 60);
     }
 
     this.setState(() => ({
@@ -83,7 +83,7 @@ class Statistics extends Component {
 
     return (
       <div>
-        <div>Speed: {speed}</div>
+        <div>Speed: {speed} CPM ({Math.floor(speed / 5)} WPM)</div>
         <div>
           Acuracy: {accuracy.relative} (real: {accuracy.real})
         </div>

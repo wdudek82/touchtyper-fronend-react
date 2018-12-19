@@ -12,7 +12,7 @@ class TypingExercise extends Component {
     originalText: this.props.exercise.text,
     typedText: '',
     mistakeIndexes: [],
-    unfixedMistakes: this.props.exercise.text.split('').map((_) => 0),
+    unfixedMistakes: this.props.exercise.text.split('').map(() => 0),
     timestamps: [],
   };
 
