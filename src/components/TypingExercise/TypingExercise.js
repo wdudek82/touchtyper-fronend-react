@@ -1,15 +1,25 @@
 import React, { Component } from 'react';
 import LineSpan from './LineSpan/LineSpan';
 import './TypingExercise.css';
+import MasterInput from '../Layout/MasterInput/MasterInput';
+import Statistics from './Statistics/Statistics';
+import KeySound from '../KeySound/KeySound';
+import ProgressBar from '../Layout/ProgressBar/ProgressBar';
+import ExerciseNavigation from './ExerciseNavigation/ExerciseNavigation';
 
 class TypingExercise extends Component {
   state = {
     originalText: this.props.exercise.text,
     typedText: '',
-    mistakes: [],
+    mistakeIndexes: [],
+    unfixedMistakes: this.props.exercise.text.split('').map((_) => 0),
+    timestamps: [],
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.keysCorrect = document.querySelectorAll('.key-correct');
+    this.keysIncorrect = document.querySelectorAll('.key-incorrect');
+  }
 
   createLineSpans = (text) => {
     const pattern = /[\w\W]{1,55}\W/g;
@@ -26,30 +36,80 @@ class TypingExercise extends Component {
           line={line}
           startIndex={startIndex}
           typedText={this.state.typedText}
-          mistakes={this.state.mistakes}
+          mistakeIndexes={this.state.mistakeIndexes}
+          unfixedMistakes={this.state.unfixedMistakes}
         />
       );
     });
   };
 
+  playSoundForKey = (isCorrect = true) => {
+    for (let i = 0; i < this.keysCorrect.length; i += 1) {
+      if (isCorrect) {
+        if (this.keysCorrect[i].paused) {
+          this.keysCorrect[i].play();
+          break;
+        }
+      } else {
+        if (this.keysIncorrect[i].paused) {
+          this.keysIncorrect[i].play();
+          break;
+        }
+      }
+    }
+  };
+
+  saveTimeStamp = () => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    this.setState((prevState) => ({
+      timestamps: [...prevState.timestamps, timestamp],
+    }));
+  };
+
   handleOnChange = (e) => {
     const { value } = e.target;
 
+    // TODO: Temporary, replace with Redux
+    const isCorrect =
+      value.slice(-1)[0] === this.state.originalText[value.length - 1];
+
+    if (isCorrect) {
+      this.saveTimeStamp();
+    }
+    // ==========================
+
+    this.playSoundForKey(isCorrect);
     this.setState(() => ({ typedText: value }));
   };
 
   render() {
     return (
       <div>
-        <input
-          type="text"
+        <MasterInput
+          keyUp={this.handleKeyUp}
+          change={this.handleOnChange}
+          keyDown={this.handleKeyDown}
           value={this.state.typedText}
-          onChange={this.handleOnChange}
         />
 
-        <div className="text-container">
-          {this.createLineSpans()}
-        </div>
+        <ExerciseNavigation isPrivate={true} />
+
+        <ProgressBar
+          originalText={this.state.originalText}
+          typedText={this.state.typedText}
+        />
+
+        <div className="text-container">{this.createLineSpans()}</div>
+
+        <Statistics
+          typedText={this.state.typedText}
+          mistakeIndexes={this.state.mistakeIndexes}
+          unfixedMistakes={this.state.unfixedMistakes}
+          timestamps={this.state.timestamps}
+        />
+
+        <KeySound />
       </div>
     );
   }

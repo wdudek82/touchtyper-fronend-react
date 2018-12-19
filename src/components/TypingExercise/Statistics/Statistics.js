@@ -48,14 +48,14 @@ class Statistics extends Component {
   };
 
   calculateAccuracy = () => {
-    const { typedText, mistakesIndexes, unfixedMistakes } = this.props;
+    const { typedText, mistakeIndexes, unfixedMistakes } = this.props;
     let sumOfUnfixed = 0;
     if (unfixedMistakes.length) {
       sumOfUnfixed = unfixedMistakes.reduce((acc, curVal) => curVal + acc);
     }
     let allMistakes = 0;
-    if (allMistakes.length) {
-      allMistakes = mistakesIndexes.reduce((acc, curVal) => curVal + acc);
+    if (mistakeIndexes.length) {
+      allMistakes = mistakeIndexes.reduce((acc, curVal) => curVal + acc);
     }
     let relativeAccuracy = '100';
     let realAccuracy = '100';

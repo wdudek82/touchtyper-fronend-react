@@ -48,7 +48,7 @@ class ExerciseWrapper extends Component {
     return (
       <>
         <h1>
-          {exercise.id} {exercise.title}
+          {exercise.id}. {exercise.title}
         </h1>
         <TypingExercise exercise={exercise} />
       </>

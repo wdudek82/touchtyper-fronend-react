@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import MasterInput from '../Layout/MasterInput/MasterInput';
 import '../TypingExercise/TypingExercise.css';
-import LineSpan from './LineSpan/LineSpan';
+
+// import LineSpan from './LineSpan/LineSpan';
 
 class TypingExercise extends Component {
   state = {

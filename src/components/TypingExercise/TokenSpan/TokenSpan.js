@@ -22,10 +22,13 @@ class TokenSpan extends React.Component {
       let classes = '';
       if (this.props.typedText[charIndex]) {
         if (char === this.props.typedText[charIndex]) {
-          classes = this.props.mistakes[charIndex] ? 'fixed' : 'correct';
+          classes = this.props.mistakeIndexes[charIndex] ? 'fixed' : 'correct';
+          this.props.unfixedMistakes[charIndex] = 0;
         } else {
           classes = 'incorrect';
-          this.props.mistakes[charIndex] = 1;
+          // TODO: only temporary solution for testing - replace with redux
+          this.props.mistakeIndexes[charIndex] = 1;
+          this.props.unfixedMistakes[charIndex] = 1;
         }
       }
 
