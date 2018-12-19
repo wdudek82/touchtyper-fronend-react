@@ -1,14 +1,52 @@
 import React from 'react';
 import './TokenSpan.css';
+import CharacterSpan from '../CharacterSpan/CharacterSpan';
 
-const TokenSpan = (props) => {
-  const { charSpans, isCurrent, start, tokenLength } = props;
+class TokenSpan extends React.Component {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    let shouldUpdate = false;
+    const { token, startIndex } = this.props;
+    const typedTextToken = this.props.typedText.substr(startIndex, token.length);
+    const newTypedTextToken = nextProps.typedText.substr(startIndex, token.length);
 
-  return (
-    <span className={`token ${isCurrent ? 'current' : ''}`}>
-      {charSpans.slice(start, start + tokenLength)}
-    </span>
-  );
-};
+    if (typedTextToken !== newTypedTextToken) {
+      shouldUpdate = true;
+    }
+
+    return shouldUpdate;
+  }
+
+  createCharSpans = (token, tokenStartIndex) => {
+    return token.split('').map((char, index) => {
+      const charIndex = tokenStartIndex + index;
+      let classes = '';
+      if (this.props.typedText[charIndex]) {
+        classes =
+          char === this.props.typedText[charIndex] ? 'correct' : 'incorrect';
+      }
+
+      return (
+        <CharacterSpan
+          key={`${char}_${charIndex}`}
+          classes={classes}
+          charIndex={charIndex}
+          typedText={this.props.typedText}
+        >
+          {char}
+        </CharacterSpan>
+      );
+    });
+  };
+
+  render() {
+    const { token, startIndex } = this.props;
+
+    return (
+      <span className={`token`}>
+        {this.createCharSpans(token, startIndex)}
+      </span>
+    );
+  }
+}
 
 export default TokenSpan;
