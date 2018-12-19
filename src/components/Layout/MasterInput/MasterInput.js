@@ -19,6 +19,7 @@ class MasterInput extends Component {
         onKeyDown={this.props.keyDown}
         onKeyUp={this.props.keyUp}
         autoFocus={true}
+        autoComplete='off'
       />
     );
   }
