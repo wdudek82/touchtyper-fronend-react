@@ -2,10 +2,6 @@ import React from 'react';
 import './CharacterSpan.css';
 
 class CharacterSpan extends React.Component {
-  // componentWillReceiveProps(nextProps, nextContext) {
-  //   console.log(nextProps);
-  // }
-
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = false;
     const { typedText, charIndex} = this.props;

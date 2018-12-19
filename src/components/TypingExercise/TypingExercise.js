@@ -30,38 +30,6 @@ class TypingExercise extends Component {
     });
   };
 
-  // createTokenSpans = (line, lineStartIndex) => {
-  //   const pattern = /\W*\w+\W*/g;
-  //   const tokens = line.match(pattern);
-  //   let totalLength = lineStartIndex;
-  //
-  //   return tokens.map((token) => {
-  //     const startIndex = totalLength;
-  //     totalLength += token.length;
-  //
-  //     return (
-  //       <TokenSpan key={_.uuid()}>{this.createCharSpans(token, startIndex)}</TokenSpan>
-  //     );
-  //   });
-  // };
-
-  // createCharSpans = (token, tokenStartIndex) => {
-  //   return token.split('').map((char, index) => {
-  //     const charIndex = tokenStartIndex + index;
-  //     let classList = '';
-  //     if (this.state.typedText[charIndex]) {
-  //       classList =
-  //         char === this.state.typedText[charIndex] ? 'correct' : 'incorrect';
-  //     }
-  //
-  //     return (
-  //       <CharacterSpan key={_.uuid()} classes={classList}>
-  //         {char}
-  //       </CharacterSpan>
-  //     );
-  //   });
-  // };
-
   handleOnChange = (e) => {
     const { value } = e.target;
 
@@ -69,9 +37,6 @@ class TypingExercise extends Component {
   };
 
   render() {
-    // console.log('typed: ', this.state.typedText, this.state.originalText.length);
-    // this.createLineSpans(this.state.originalText);
-
     return (
       <div>
         <h1>Hello, World!</h1>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MasterInput from '../Layout/MasterInput/MasterInput';
-import './TypingExercise.css';
+import '../TypingExercise/TypingExercise.css';
 import LineSpan from './LineSpan/LineSpan';
 
 class TypingExercise extends Component {
@@ -12,7 +12,6 @@ class TypingExercise extends Component {
   };
 
   componentDidMount() {
-    // this.getTokensData(this.state.originalText);
     this.getLinesData();
   }
 

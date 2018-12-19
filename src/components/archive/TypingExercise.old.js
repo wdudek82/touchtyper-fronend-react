@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import _ from 'lodash-uuid';
 import ProgressBar from '../Layout/ProgressBar/ProgressBar';
-import './TypingExercise.css';
+import '../TypingExercise/TypingExercise.css';
 import CharacterSpan from './CharacterSpan/CharacterSpan';
 import MasterInput from '../Layout/MasterInput/MasterInput';
 import TokenSpan from './TokenSpan/TokenSpan';
