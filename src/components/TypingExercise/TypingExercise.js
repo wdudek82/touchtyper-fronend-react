@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import LineSpan from './LineSpan/LineSpan';
 import './TypingExercise.css';
 import MasterInput from '../Layout/MasterInput/MasterInput';
@@ -9,21 +10,38 @@ import ExerciseNavigation from './ExerciseNavigation/ExerciseNavigation';
 
 class TypingExercise extends Component {
   state = {
-    originalText: this.props.exercise.text,
+    originalText: '',
     typedText: '',
     mistakeIndexes: [],
-    unfixedMistakes: this.props.exercise.text.split('').map(() => 0),
+    unfixedMistakes: '',
     timestamps: [],
+  };
+
+  initializeExercise = () => {
+    const exerciseId = this.props.match.params.id;
+    const exercise = this.props.exercises.exercises[exerciseId];
+
+    this.setState(() => ({
+      originalText: exercise.text,
+      typedText: '',
+      mistakeIndexes: [],
+      unfixedMistakes: exercise.text.split('').map(() => 0),
+      timestamps: [],
+    }));
   };
 
   componentDidMount() {
     this.keysCorrect = document.querySelectorAll('.key-correct');
     this.keysIncorrect = document.querySelectorAll('.key-incorrect');
+
+    this.initializeExercise();
   }
 
-  createLineSpans = (text) => {
+  createLineSpans = () => {
     const pattern = /[\w\W]{1,55}[.!?\s]/g;
-    const lines = text.match(pattern);
+    const exerciseId = this.props.match.params.id;
+    const exercise = this.props.exercises.exercises[exerciseId];
+    const lines = exercise.text.match(pattern);
     let totalLength = 0;
 
     return lines.map((line) => {
@@ -104,7 +122,7 @@ class TypingExercise extends Component {
         />
 
         <div className="text-container">
-          {this.createLineSpans(this.state.originalText)}
+          {this.state.originalText && this.createLineSpans()}
         </div>
 
         <Statistics
@@ -120,4 +138,8 @@ class TypingExercise extends Component {
   }
 }
 
-export default TypingExercise;
+const mapStateToProps = (state) => ({
+  exercises: state.exercises,
+});
+
+export default connect(mapStateToProps)(TypingExercise);
