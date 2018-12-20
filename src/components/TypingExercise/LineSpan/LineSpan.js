@@ -5,7 +5,7 @@ import './LineSpan.css';
 class LineSpan extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = true; // TODO: Fix this!
-    const { line, startIndex, typedText } = this.props;
+    const { line, startIndex } = this.props;
     const typedTextLine = this.props.typedText.substr(startIndex, line.length);
     const newTypedTextLine = nextProps.typedText.substr(
       startIndex,

@@ -1,6 +1,6 @@
 .text-container {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   flex-wrap: wrap;
   background: rgb(214, 211, 209);
   width: 900px;
