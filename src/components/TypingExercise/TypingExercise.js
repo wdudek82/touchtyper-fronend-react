@@ -22,7 +22,7 @@ class TypingExercise extends Component {
   }
 
   createLineSpans = (text) => {
-    const pattern = /[\w\W]{1,55}\W/g;
+    const pattern = /[\w\W]{1,55}[.!?\s]/g;
     const lines = text.match(pattern);
     let totalLength = 0;
 

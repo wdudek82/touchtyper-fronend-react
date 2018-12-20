@@ -13,7 +13,6 @@ class LineSpan extends Component {
     );
 
     if (typedTextLine !== newTypedTextLine) {
-      console.log('line: ', startIndex, typedText.length);
       shouldUpdate = true;
     }
 

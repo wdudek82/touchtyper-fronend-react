@@ -22,36 +22,41 @@ class TokenSpan extends React.Component {
     return shouldUpdate;
   }
 
+  getCharStyles = (tokenStartIndex, char, charIndexInToken, charIndex) => {
+    const { typedText, mistakeIndexes, unfixedMistakes } = this.props;
+    let classes = '';
+
+    if (typedText[charIndex]) {
+      if (char === typedText[charIndex]) {
+        classes = mistakeIndexes[charIndex] ? 'fixed' : 'correct';
+        unfixedMistakes[charIndex] = 0;
+      } else {
+        classes = 'incorrect';
+        // TODO: only temporary solution for testing - replace with redux
+        mistakeIndexes[charIndex] = 1;
+        unfixedMistakes[charIndex] = 1;
+      }
+    } else if (
+      typedText.length === charIndex ||
+      (tokenStartIndex === typedText.length &&
+        charIndexInToken === 0)
+    ) {
+      classes = 'caret';
+    }
+
+    return classes;
+  };
+
   createCharSpans = (token, tokenStartIndex) => {
     return token.split('').map((char, charIndexInToken) => {
       const charIndex = tokenStartIndex + charIndexInToken;
 
-      // console.log(
-      //   'charIndex:',
-      //   charIndex, 'typedText',
-      //   this.props.typedText.length,
-      //   'tokenStartIndex', tokenStartIndex,
-      //   charIndex === this.props.typedText.length,
-      // );
-
-      let classes = '';
-      if (this.props.typedText[charIndex]) {
-        if (char === this.props.typedText[charIndex]) {
-          classes = this.props.mistakeIndexes[charIndex] ? 'fixed' : 'correct';
-          this.props.unfixedMistakes[charIndex] = 0;
-        } else {
-          classes = 'incorrect';
-          // TODO: only temporary solution for testing - replace with redux
-          this.props.mistakeIndexes[charIndex] = 1;
-          this.props.unfixedMistakes[charIndex] = 1;
-        }
-      } else if (
-        (this.props.typedText.length === charIndex) ||
-        (tokenStartIndex === this.props.typedText.length && charIndexInToken === 0)
-      ) {
-        console.log('carret:', this.props.typedText.length === charIndexInToken);
-        classes = 'caret';
-      }
+      const classes = this.getCharStyles(
+        tokenStartIndex,
+        char,
+        charIndexInToken,
+        charIndex,
+      );
 
       return (
         <CharacterSpan

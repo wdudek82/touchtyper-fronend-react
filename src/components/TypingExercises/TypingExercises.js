@@ -39,6 +39,12 @@ class TypingExercises extends Component {
           'PATER NOSTER, qui es in caelis, sanctificetur nomen tuum. Adveniat regnum tuum. Fiat voluntas tua, sicut in caelo et in terra. Panem nostrum quotidianum da nobis hodie, et dimitte nobis debita nostra sicut et nos dimittimus debitoribus nostris. Et ne nos inducas in tentationem, sed libera nos a malo. Amen.',
         isPrivate: false,
       },
+      {
+        id: 6,
+        title: 'Sutra Serca',
+        text: 'Obserwujący Dźwięki Świata Bodhisattwa, gdy praktykował głęboko Doskonałą Mądroś w jednym błysku ujrzał pustkę pięciu składników (skandh) i uwolnił się od całego bólu i cierpienia. Siariputro. Forma nie jest różna od pustki. Pustka nie jest różn od formy. Forma jest dokładnie pustką. Pustka jest dokładnie formą. Wrażenia, myśli, wola i świadomość są również takie. Siariputro. Wszystkie zjawiska (dharmy są aspektem pustki. Nie rodzą się i nie umierają. Nie są skalane i nie są czyste Nie zwiększają się i nie zmniejszają. Tak więc w pustce nie ma formy, wrażeń myśli, woli i świadomości. Nie ma oczu, uszu, nosa, języka, ciała, umysłu Nie ma kolorów, dźwięku, zapachu, smaku, dotyku, zjawisk (dharm) Nie ma widzenia, ani świadomości. Nie ma złudzeń ani kresu złudzeń. Nie ma starości i śmierci, ani kresu starości i śmierc Nie ma cierpienia, przyczyny cierpienia, kresu cierpienia i drogi wyzwalające z cierpienia. Nie ma mądrości, ani osiągnięcia mądrości. Poniewa nie ma niczego do osiągnięcia, Bodhisattwa w oparciu o Doskonał Mądrość ma serce-umysł wolne od przeszkód. Bez przeszkód, zatem bez lęku oddzielony od złudnych jak sen myśli - to jest ostateczna Nirwan Buddowie trzech okresów urzeczywistniają Doskonałą Mądrość i osiągają Najwyższ Nieprześcignione Oświecenie - Annuttara Samiak Sambodhi. Wiedz zatem że Doskonała Mądrość jest formułą wielkiej mocy, wielkiego światła, najlepsz i nieprześcignioną, usuwającą całe cierpienie, jest Prawdą nie fałszem. Recytuj więc mantrę Doskonałej Mądrośc GATE GATE PARA GATE PARASAM GATE BODHI SWAHA! ',
+        isPrivate: false,
+      },
     ],
   };
 
@@ -46,7 +52,11 @@ class TypingExercises extends Component {
     return this.state.exercises.map((item) => (
       <Link key={item.title} className="exercise" to={`exercise/${item.id}`}>
         <div>
-          <span className={`exercise-privacy-status ${item.isPrivate ? 'private' : 'public'}`} />
+          <span
+            className={`exercise-privacy-status ${
+              item.isPrivate ? 'private' : 'public'
+            }`}
+          />
           {item.id}. {item.title}
           <button type="button">Edit</button>
         </div>

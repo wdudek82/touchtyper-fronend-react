@@ -33,7 +33,7 @@ class Statistics extends Component {
 
     if (timeDelta) {
       charsPerSecond =
-        (((this.props.typedText.length - sumOfUnfixed) / timeDelta) * 60);
+        ((this.props.typedText.length - sumOfUnfixed) / timeDelta) * 60;
     }
 
     this.setState(() => ({
@@ -50,6 +50,7 @@ class Statistics extends Component {
   calculateAccuracy = () => {
     const { typedText, mistakeIndexes, unfixedMistakes } = this.props;
     let sumOfUnfixed = 0;
+
     if (unfixedMistakes.length) {
       sumOfUnfixed = unfixedMistakes.reduce((acc, curVal) => curVal + acc);
     }
@@ -83,7 +84,9 @@ class Statistics extends Component {
 
     return (
       <div>
-        <div>Speed: {speed} CPM ({Math.floor(speed / 5)} WPM)</div>
+        <div>
+          Speed: {speed} CPM ({Math.floor(speed / 5)} WPM)
+        </div>
         <div>
           Acuracy: {accuracy.relative} (real: {accuracy.real})
         </div>
