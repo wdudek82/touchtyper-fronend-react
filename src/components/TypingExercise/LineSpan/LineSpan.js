@@ -4,13 +4,16 @@ import './LineSpan.css';
 
 class LineSpan extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    let shouldUpdate = false;
-    const { line, startIndex } = this.props;
+    let shouldUpdate = true; // TODO: Fix this!
+    const { line, startIndex, typedText } = this.props;
     const typedTextLine = this.props.typedText.substr(startIndex, line.length);
-    const newTypedTextLine = nextProps.typedText.substr(startIndex, line.length);
-
+    const newTypedTextLine = nextProps.typedText.substr(
+      startIndex,
+      line.length,
+    );
 
     if (typedTextLine !== newTypedTextLine) {
+      console.log('line: ', startIndex, typedText.length);
       shouldUpdate = true;
     }
 
@@ -23,13 +26,23 @@ class LineSpan extends Component {
     let totalLength = lineStartIndex;
 
     return tokens.map((token) => {
+      const { typedText } = this.props;
       const startIndex = totalLength;
       totalLength += token.length;
+
+      let classes = '';
+      if (
+        typedText.length >= startIndex &&
+        typedText.length < startIndex + token.length
+      ) {
+        classes = 'current';
+      }
 
       return (
         <TokenSpan
           key={`${token}_${startIndex}`}
           token={token}
+          classes={classes}
           startIndex={startIndex}
           typedText={this.props.typedText}
           mistakeIndexes={this.props.mistakeIndexes}
@@ -42,9 +55,7 @@ class LineSpan extends Component {
   render() {
     const { line, startIndex } = this.props;
     return (
-      <span className="line">
-        {this.createTokenSpans(line, startIndex)}
-      </span>
+      <span className="line">{this.createTokenSpans(line, startIndex)}</span>
     );
   }
 }

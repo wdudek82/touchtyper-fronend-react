@@ -4,10 +4,13 @@ import './CharacterSpan.css';
 class CharacterSpan extends React.Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = false;
-    const { typedText, charIndex } = this.props;
+    const { typedText, charIndex, classes } = this.props;
     const nextTypedText = nextProps.typedText;
 
-    if (typedText[charIndex] !== nextTypedText[charIndex]) {
+    if (
+      typedText[charIndex] !== nextTypedText[charIndex] ||
+      classes !== nextProps.classes
+    ) {
       shouldUpdate = true;
     }
 
@@ -15,9 +18,11 @@ class CharacterSpan extends React.Component {
   }
 
   render() {
+    const { classes, children } = this.props;
+
     return (
-      <span className={`char ${this.props.classes || ''}`}>
-        {this.props.children !== ' ' ? this.props.children : <i>&nbsp;</i>}
+      <span className={`char ${classes}`}>
+        {children !== ' ' ? children : <i>&nbsp;</i>}
       </span>
     );
   }

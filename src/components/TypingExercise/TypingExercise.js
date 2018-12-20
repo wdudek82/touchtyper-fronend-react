@@ -23,7 +23,7 @@ class TypingExercise extends Component {
 
   createLineSpans = (text) => {
     const pattern = /[\w\W]{1,55}\W/g;
-    const lines = this.state.originalText.match(pattern);
+    const lines = text.match(pattern);
     let totalLength = 0;
 
     return lines.map((line) => {
@@ -72,13 +72,13 @@ class TypingExercise extends Component {
     const { originalText } = this.state;
 
     if (value.length <= originalText.length) {
-      // TODO: Temporary, replace with Redux
+      // === TODO: Temporary, replace with Redux ===========
       const isCorrect = value.slice(-1)[0] === originalText[value.length - 1];
 
       if (isCorrect) {
         this.saveTimeStamp();
       }
-      // ==========================
+      // ===================================================
 
       this.playSoundForKey(isCorrect);
 
@@ -103,7 +103,9 @@ class TypingExercise extends Component {
           typedText={this.state.typedText}
         />
 
-        <div className="text-container">{this.createLineSpans()}</div>
+        <div className="text-container">
+          {this.createLineSpans(this.state.originalText)}
+        </div>
 
         <Statistics
           typedText={this.state.typedText}
