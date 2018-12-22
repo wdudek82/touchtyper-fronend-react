@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { initializeExerciseState } from '../../../store/actions/exerciseActions';
 import { Link } from 'react-router-dom';
 
 const ExerciseNavigation = (props) => {
@@ -10,7 +12,7 @@ const ExerciseNavigation = (props) => {
 
       <button
         type="button"
-        onClick={() => console.log('=== NOT IMPLEMENTED ===')}
+        onClick={() => props.initializeExerciseState(props.text)}
       >
         Restart
       </button>
@@ -26,4 +28,4 @@ const ExerciseNavigation = (props) => {
   );
 };
 
-export default ExerciseNavigation;
+export default connect(null, { initializeExerciseState })(ExerciseNavigation);

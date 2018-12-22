@@ -1,4 +1,12 @@
-import { GET_EXERCISE } from '../actions/types';
+import {
+  CLEAR_TIMESTAMPS,
+  CREATE_EXERCISE,
+  INITIALIZE_UNFIXED_MISTAKES,
+  UPDATE_MISTAKE_INDEXES,
+  UPDATE_TIMESTAMP,
+  UPDATE_TYPED_TEXT,
+  UPDATE_UNFIXED_MISTAKES,
+} from '../actions/types';
 
 const initialState = {
   exercises: [
@@ -37,12 +45,61 @@ const initialState = {
       isPrivate: false,
     },
   ],
+  typedText: '',
+  mistakeIndexes: [],
+  unfixedMistakes: [],
+  timestamps: [],
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case GET_EXERCISE:
-      return state.exercises[action.payload];
+    case CREATE_EXERCISE:
+      return {
+        ...state,
+        exercises: [...state.exercises, action.payload],
+      };
+    case UPDATE_TYPED_TEXT:
+      return {
+        ...state,
+        typedText: action.payload,
+      };
+    case UPDATE_MISTAKE_INDEXES: {
+      const updMistakeIndexes = state.mistakeIndexes;
+      updMistakeIndexes[action.payload] = 1;
+
+      return {
+        ...state,
+        mistakeIndexes: updMistakeIndexes,
+      };
+    }
+    case INITIALIZE_UNFIXED_MISTAKES:
+      return {
+        ...state,
+        unfixedMistakes: action.payload,
+      };
+    case UPDATE_UNFIXED_MISTAKES: {
+      const updUnfixesMistakes = state.unfixedMistakes.map((e, index) =>
+        index === action.payload.index ? action.payload.value : e,
+      );
+
+      return {
+        ...state,
+        unfixedMistakes: updUnfixesMistakes,
+      };
+    }
+    case UPDATE_TIMESTAMP:
+      return {
+        ...state,
+        timestamps: [
+          ...state.timestamps,
+          action.payload,
+        ],
+      };
+    case CLEAR_TIMESTAMPS:
+      return {
+        ...state,
+        timestamps: [],
+      };
     default:
       return state;
   }

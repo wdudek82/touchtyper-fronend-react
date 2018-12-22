@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {
+  addTimestamp,
+  initializeExerciseState,
+  initializeUnfixedMistakes,
+  updateTypedText,
+} from '../../store/actions/exerciseActions';
 import LineSpan from './LineSpan/LineSpan';
 import './TypingExercise.css';
 import MasterInput from '../Layout/MasterInput/MasterInput';
@@ -13,21 +19,15 @@ class TypingExercise extends Component {
     originalText: '',
     typedText: '',
     mistakeIndexes: [],
-    unfixedMistakes: '',
+    // unfixedMistakes: '',
     timestamps: [],
   };
 
   initializeExercise = () => {
-    const exerciseId = this.props.match.params.id;
-    const exercise = this.props.exercises.exercises[exerciseId];
+    const { id } = this.props.match.params;
+    const { text } = this.props.exercises.exercises[id - 1];
 
-    this.setState(() => ({
-      originalText: exercise.text,
-      typedText: '',
-      mistakeIndexes: [],
-      unfixedMistakes: exercise.text.split('').map(() => 0),
-      timestamps: [],
-    }));
+    this.props.initializeExerciseState(text);
   };
 
   componentDidMount() {
@@ -37,11 +37,9 @@ class TypingExercise extends Component {
     this.initializeExercise();
   }
 
-  createLineSpans = () => {
+  createLineSpans = (text) => {
     const pattern = /[\w\W]{1,55}[.!?\s]/g;
-    const exerciseId = this.props.match.params.id;
-    const exercise = this.props.exercises.exercises[exerciseId];
-    const lines = exercise.text.match(pattern);
+    const lines = text.match(pattern);
     let totalLength = 0;
 
     return lines.map((line) => {
@@ -53,9 +51,9 @@ class TypingExercise extends Component {
           key={line}
           line={line}
           startIndex={startIndex}
-          typedText={this.state.typedText}
-          mistakeIndexes={this.state.mistakeIndexes}
-          unfixedMistakes={this.state.unfixedMistakes}
+          typedText={this.props.exercises.typedText}
+          mistakeIndexes={this.props.exercises.mistakeIndexes}
+          unfixedMistakes={this.props.exercises.unfixedMistakes}
         />
       );
     });
@@ -77,59 +75,52 @@ class TypingExercise extends Component {
     }
   };
 
-  saveTimeStamp = () => {
-    const timestamp = Math.round(new Date().getTime() / 1000);
-
-    this.setState((prevState) => ({
-      timestamps: [...prevState.timestamps, timestamp],
-    }));
-  };
-
   handleOnChange = (e) => {
     const { value } = e.target;
-    const { originalText } = this.state;
+    const { id } = this.props.match.params;
+    const { text } = this.props.exercises.exercises[id - 1];
 
-    if (value.length <= originalText.length) {
+    if (value.length <= text.length) {
       // === TODO: Temporary, replace with Redux ===========
-      const isCorrect = value.slice(-1)[0] === originalText[value.length - 1];
+      const isCorrect = value.slice(-1)[0] === text[value.length - 1];
 
       if (isCorrect) {
-        this.saveTimeStamp();
+        this.props.addTimestamp();
       }
       // ===================================================
 
-      this.playSoundForKey(isCorrect);
+      // TODO: There are some issues with soud after switching to Redux
+      // this.playSoundForKey(isCorrect);
 
-      this.setState(() => ({ typedText: value }));
+      this.props.updateTypedText(value);
     }
   };
 
   render() {
+    const { id } = this.props.match.params;
+    const { text } = this.props.exercises.exercises[id - 1];
+    const { typedText } = this.props.exercises;
+
     return (
       <div>
         <MasterInput
           keyUp={this.handleKeyUp}
           change={this.handleOnChange}
           keyDown={this.handleKeyDown}
-          value={this.state.typedText}
+          value={typedText}
         />
 
-        <ExerciseNavigation isPrivate={true} />
+        <ExerciseNavigation isPrivate={true} text={text} />
 
-        <ProgressBar
-          originalText={this.state.originalText}
-          typedText={this.state.typedText}
-        />
+        <ProgressBar originalText={text} typedText={typedText} />
 
-        <div className="text-container">
-          {this.state.originalText && this.createLineSpans()}
-        </div>
+        <div className="text-container">{this.createLineSpans(text)}</div>
 
         <Statistics
-          typedText={this.state.typedText}
-          mistakeIndexes={this.state.mistakeIndexes}
-          unfixedMistakes={this.state.unfixedMistakes}
-          timestamps={this.state.timestamps}
+          typedText={this.props.exercises.typedText}
+          mistakeIndexes={this.props.exercises.mistakeIndexes}
+          unfixedMistakes={this.props.exercises.unfixedMistakes}
+          timestamps={this.props.exercises.timestamps}
         />
 
         <KeySound />
@@ -142,4 +133,12 @@ const mapStateToProps = (state) => ({
   exercises: state.exercises,
 });
 
-export default connect(mapStateToProps)(TypingExercise);
+export default connect(
+  mapStateToProps,
+  {
+    updateTypedText,
+    initializeUnfixedMistakes,
+    addTimestamp,
+    initializeExerciseState,
+  },
+)(TypingExercise);
