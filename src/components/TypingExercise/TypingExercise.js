@@ -15,14 +15,6 @@ import ProgressBar from '../Layout/ProgressBar/ProgressBar';
 import ExerciseNavigation from './ExerciseNavigation/ExerciseNavigation';
 
 class TypingExercise extends Component {
-  state = {
-    originalText: '',
-    typedText: '',
-    mistakeIndexes: [],
-    // unfixedMistakes: '',
-    timestamps: [],
-  };
-
   initializeExercise = () => {
     const { id } = this.props.match.params;
     const { text } = this.props.exercises.exercises[id - 1];

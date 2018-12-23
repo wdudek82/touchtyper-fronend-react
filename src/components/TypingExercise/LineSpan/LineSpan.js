@@ -4,7 +4,7 @@ import './LineSpan.css';
 
 class LineSpan extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    let shouldUpdate = true; // TODO: Fix this!
+    let shouldUpdate = false;
     const { line, startIndex } = this.props;
     const typedTextLine = this.props.typedText.substr(startIndex, line.length);
     const newTypedTextLine = nextProps.typedText.substr(
@@ -12,7 +12,7 @@ class LineSpan extends Component {
       line.length,
     );
 
-    if (typedTextLine !== newTypedTextLine) {
+    if (typedTextLine !== newTypedTextLine || newTypedTextLine.length === 0) {
       shouldUpdate = true;
     }
 
