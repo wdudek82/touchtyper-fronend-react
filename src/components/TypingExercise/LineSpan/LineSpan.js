@@ -43,7 +43,7 @@ class LineSpan extends Component {
           token={token}
           classes={classes}
           startIndex={startIndex}
-          typedText={this.props.typedText}
+          // typedText={this.props.typedText}
           mistakeIndexes={this.props.mistakeIndexes}
           unfixedMistakes={this.props.unfixedMistakes}
         />

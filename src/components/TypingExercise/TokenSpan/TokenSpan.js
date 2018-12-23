@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import './TokenSpan.css';
 import CharacterSpan from '../CharacterSpan/CharacterSpan';
 
@@ -6,16 +7,19 @@ class TokenSpan extends React.Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = false;
     const { token, startIndex, classes } = this.props;
-    const typedTextToken = this.props.typedText.substr(
+    const typedTextToken = this.props.exercises.typedText.substr(
       startIndex,
       token.length,
     );
-    const newTypedTextToken = nextProps.typedText.substr(
+    const newTypedTextToken = nextProps.exercises.typedText.substr(
       startIndex,
       token.length,
     );
 
+
     if (typedTextToken !== newTypedTextToken || classes !== nextProps.classes) {
+      console.log("Comp:", this.props.exercises.typedText, ' | ',nextProps.exercises.typedText);
+      console.log('token updated', token);
       shouldUpdate = true;
     }
 
@@ -23,7 +27,8 @@ class TokenSpan extends React.Component {
   }
 
   getCharStyles = (tokenStartIndex, char, charIndexInToken, charIndex) => {
-    const { typedText, mistakeIndexes, unfixedMistakes } = this.props;
+    const {typedText } = this.props.exercises;
+    const { mistakeIndexes, unfixedMistakes } = this.props;
     let classes = '';
 
     if (typedText[charIndex]) {
@@ -63,7 +68,6 @@ class TokenSpan extends React.Component {
           key={`${char}_${charIndex}`}
           classes={classes}
           charIndex={charIndex}
-          typedText={this.props.typedText}
         >
           {char}
         </CharacterSpan>
@@ -82,4 +86,8 @@ class TokenSpan extends React.Component {
   }
 }
 
-export default TokenSpan;
+const mapStateToProps = (state) => ({
+  exercises: state.exercises,
+});
+
+export default connect(mapStateToProps)(TokenSpan);

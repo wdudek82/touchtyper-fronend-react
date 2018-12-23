@@ -1,11 +1,13 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import './CharacterSpan.css';
 
 class CharacterSpan extends React.Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     let shouldUpdate = false;
-    const { typedText, charIndex, classes } = this.props;
-    const nextTypedText = nextProps.typedText;
+    const { typedText } = this.props.exercises;
+    const { charIndex, classes } = this.props;
+    const nextTypedText = nextProps.exercises.typedText;
 
     if (
       typedText[charIndex] !== nextTypedText[charIndex] ||
@@ -28,4 +30,8 @@ class CharacterSpan extends React.Component {
   }
 }
 
-export default CharacterSpan;
+const mapStateToProps = (state) => ({
+  exercises: state.exercises,
+});
+
+export default connect(mapStateToProps)(CharacterSpan);
